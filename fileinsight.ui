@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FileInsight</class>
+ <widget class="QMainWindow" name="FileInsight">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>FileInsight</string>
+  </property>
+  <widget class="QWidget" name="widget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="leftWidget">
+      <item>
+       <widget class="IconDisplayWidget" name="iconDisplay" native="true"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>(no file type selected)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="selectFileButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Select File</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menu">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>400</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSelect"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionSelect">
+   <property name="text">
+    <string>Select File (&amp;O)</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About FileInsight</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>IconDisplayWidget</class>
+   <extends>QWidget</extends>
+   <header>icondisplaywidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
