@@ -21,5 +21,5 @@ HEADERS  += fileinsight.h \
 
 FORMS    += fileinsight.ui
 
-#Link to libmagic for file type detection
+# Link to libmagic for file type detection
 LIBS += -lmagic

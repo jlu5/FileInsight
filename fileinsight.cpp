@@ -7,58 +7,66 @@ FileInsight::FileInsight(QWidget *parent) :
     // Call the QMainWindow constructor in order make this widget a new window
     QMainWindow(parent),
 
-    // Set up the UI by creating a UI class instance and initializing it
+    // Set up the UI by creating an instance of our UI class and initializing it
     ui(new Ui::FileInsight)
     {
         ui->setupUi(this);
     }
 
-    // Destructor for the FileInsight class: delete the temporary ui variable that we assigned in
-    // the constructor.
-    FileInsight::~FileInsight()
-    {
-        delete ui;
+// Destructor for the FileInsight class:
+FileInsight::~FileInsight()
+{
+    // Delete the temporary ui variable that we assigned in the constructor.
+    delete ui;
+}
+
+void FileInsight::on_actionQuit_triggered()
+{
+    // Implement the Quit action in the File menu. This calls quit() on the global "qApp"
+    // pointer, which refers to the current running QApplication instance
+    qApp->quit();
+}
+
+void FileInsight::chooseFile()
+{
+    // This implements file selection via Qt's file dialog built-ins
+    QString filename = QFileDialog::getOpenFileName(this, tr("Select File"), QString(),
+            tr("All Files (*)"));
+    std::cout << "Selected file: " << filename.toStdString() << std::endl;
+
+    if (!filename.isEmpty()) {
+        // Open the file afterwards.
+        this->openFile(filename);
+    }
+}
+
+void FileInsight::openFile(QString filename)
+{
+    if (&this->magic_cookie) {
+        /* Initialize libmagic by fetching ourselves a special cookie from magic_open() - this is
+         * similar to initializing a class. More information about the libmagic API:
+         * https://linux.die.net/man/3/libmagic
+         */
+        this->magic_cookie = magic_open(MAGIC_CHECK); // libmagic flags (e.g. MAGIC_CHECK) go here
+
+        // Tell libmagic to load the default file type definitions by passing NULL as filename argument
+        magic_load(this->magic_cookie, NULL);
     }
 
-    void FileInsight::on_actionQuit_triggered()
-    {
-        // Implement the Quit action in the File menu. This calls quit() on the global "qApp"
-        // pointer, which refers to the current running QApplication instance
-        qApp->quit();
-    }
+    // Convert QString into const char *, so that it can be plugged into the libmagic C library
+    const char * cfilename = filename.toUtf8().data();
 
-    void FileInsight::chooseFile()
-    {
-        // Implement the select file button
+    // Call libmagic on the filename - it will return a string describing the file.
+    const char * magic_output = magic_file(this->magic_cookie, cfilename);
+    std::cout << "libmagic output: " << magic_output << std::endl;
+}
 
-        QString filename = QFileDialog::getOpenFileName(this, tr("Select File"), QString(),
-                tr("All Files (*)"));
-        //std::cout << "Selected file: " << filename.toStdString() << std::endl;
-        if (!filename.isEmpty()) {
-            std::cout << "calling openFile()" << std::endl;
-            this->openFile(filename);
-        }
-    }
+void FileInsight::on_selectFileButton_clicked()
+{
+    this->chooseFile();
+}
 
-    void FileInsight::openFile(QString filename)
-    {
-        magic_t cookie = magic_open(MAGIC_CHECK);
-        magic_load(cookie, NULL);
-        // Convert QString into const char *, so that it can be plugged into the libmagic C library
-        const char * cfilename = filename.toUtf8().data();
-
-        const char * magic_output = magic_file(cookie, cfilename);
-        std::cout << "libmagic output: " << magic_output << std::endl;
-
-        magic_close(cookie);
-    }
-
-    void FileInsight::on_selectFileButton_clicked()
-    {
-        this->chooseFile();
-    }
-
-    void FileInsight::on_actionSelect_triggered()
-    {
-        this->chooseFile();
-    }
+void FileInsight::on_actionSelect_triggered()
+{
+    this->chooseFile();
+}

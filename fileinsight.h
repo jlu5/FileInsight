@@ -37,7 +37,7 @@ class FileInsight : public QMainWindow
 
     private:
         Ui::FileInsight *ui;
-        QIcon icon;
+        magic_t magic_cookie;
 };
 
 #endif // FILEINSIGHT_H
