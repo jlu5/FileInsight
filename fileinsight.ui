@@ -21,9 +21,18 @@
        <widget class="IconDisplayWidget" name="iconDisplay" native="true"/>
       </item>
       <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>(no file type selected)</string>
+       <widget class="QPlainTextEdit" name="output">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

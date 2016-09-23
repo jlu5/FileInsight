@@ -61,6 +61,11 @@ void FileInsight::openFile(QString filename)
     // Call libmagic on the filename - it will return a string describing the file.
     const char * magic_output = magic_file(this->magic_cookie, cfilename);
     std::cout << "libmagic output: " << magic_output << std::endl;
+
+    // Format the libmagic output with some headings and display it
+    QString displaytext = "File: " +filename + "\n\n";
+    displaytext.append(magic_output);
+    ui->output->setPlainText(displaytext);
 }
 
 void FileInsight::on_selectFileButton_clicked()
