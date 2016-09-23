@@ -42,7 +42,8 @@ void FileInsight::chooseFile()
 
 void FileInsight::openFile(QString filename)
 {
-    if (&this->magic_cookie) {
+    std::cout << "magic cookie: " << this->magic_cookie << std::endl;
+    if (this->magic_cookie == 0) {
         /* Initialize libmagic by fetching ourselves a special cookie from magic_open() - this is
          * similar to initializing a class. More information about the libmagic API:
          * https://linux.die.net/man/3/libmagic
@@ -52,6 +53,7 @@ void FileInsight::openFile(QString filename)
         // Tell libmagic to load the default file type definitions by passing NULL as filename argument
         magic_load(this->magic_cookie, NULL);
     }
+    std::cout << "using magic cookie: " << this->magic_cookie << std::endl;
 
     // Convert QString into const char *, so that it can be plugged into the libmagic C library
     const char * cfilename = filename.toUtf8().data();
