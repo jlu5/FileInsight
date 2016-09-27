@@ -18,7 +18,11 @@
     <item>
      <layout class="QVBoxLayout" name="leftWidget">
       <item>
-       <widget class="IconDisplayWidget" name="iconDisplay" native="true"/>
+       <widget class="QLabel" name="iconDisplay">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPlainTextEdit" name="output">
@@ -95,14 +99,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>IconDisplayWidget</class>
-   <extends>QWidget</extends>
-   <header>icondisplaywidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

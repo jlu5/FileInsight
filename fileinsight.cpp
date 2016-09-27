@@ -43,17 +43,17 @@ void FileInsight::chooseFile()
 void FileInsight::openFile(QString filename)
 {
     std::cout << "magic cookie: " << this->magic_cookie << std::endl;
+
+    /* Initialize libmagic by fetching ourselves special cookies from magic_open() - this is
+     * similar to fetching a specific instance of a class. More information about the libmagic API:
+     * https://linux.die.net/man/3/libmagic
+     */
     if (this->magic_cookie == 0) {
-        /* Initialize libmagic by fetching ourselves a special cookie from magic_open() - this is
-         * similar to initializing a class. More information about the libmagic API:
-         * https://linux.die.net/man/3/libmagic
-         */
         this->magic_cookie = magic_open(MAGIC_CHECK); // libmagic flags (e.g. MAGIC_CHECK) go here
 
         // Tell libmagic to load the default file type definitions by passing NULL as filename argument
         magic_load(this->magic_cookie, NULL);
     }
-    std::cout << "using magic cookie: " << this->magic_cookie << std::endl;
 
     // Convert QString into const char *, so that it can be plugged into the libmagic C library
     const char * cfilename = filename.toUtf8().data();
@@ -66,6 +66,50 @@ void FileInsight::openFile(QString filename)
     QString displaytext = "File: " +filename + "\n\n";
     displaytext.append(magic_output);
     ui->output->setPlainText(displaytext);
+
+    /* A second cookie (libmagic initialized with different options) allows us to fetch the MIME
+     * type of the file instead of the description.
+     */
+    if (this->magic_cookie_mime == 0) {
+        this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
+        magic_load(this->magic_cookie_mime, NULL);
+    }
+
+    /*
+    QFileInfo fileinfo(filename);
+    QFileIconProvider iconprovider;
+    QIcon icon = iconprovider.icon(fileinfo);
+    */
+    // Fetch the MIME type for the given file: this allows us to fetch an icon for it.
+    QString mimetype = magic_file(this->magic_cookie_mime, cfilename);
+    //std::cout << "errors?: " << magic_error(this->magic_cookie_mime);
+
+    /* Generic MIME types are created by taking first part of the type (e.g. "video" from "video/ogg")
+     * and adding "-x-generic" to it. So, the generic type for video/ogg would be video-x-generic.
+     */
+    QString generic_type = mimetype.split("/")[0] + "-x-generic";
+
+    // Replace any "/" with "-" in the MIME type before icon lookup.
+    int slashlocation = mimetype.indexOf("/");
+
+    if (slashlocation != -1) {
+        mimetype.replace(slashlocation, 1, "-");
+    }
+
+    std::cout << "Looking up icon for MIME type " << mimetype.toStdString() <<
+                 " (generic name: " << generic_type.toStdString() << ")" << std::endl;
+    QIcon icon;
+    if (QIcon::hasThemeIcon(mimetype)) {
+        // If the theme we're using has an icon for the MIME type we're using for,
+        // prefer that,
+        icon = QIcon::fromTheme(mimetype);
+    } else {
+        // Otherwise, fall back to the generic type.
+        icon = QIcon::fromTheme(generic_type, this->iconprovider.icon(QFileIconProvider::File));
+    }
+
+
+    ui->iconDisplay->setPixmap(icon.pixmap(64,64));
 }
 
 void FileInsight::on_selectFileButton_clicked()

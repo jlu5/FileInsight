@@ -13,11 +13,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        fileinsight.cpp \
-    icondisplaywidget.cpp
+        fileinsight.cpp
 
-HEADERS  += fileinsight.h \
-    icondisplaywidget.h
+HEADERS  += fileinsight.h
 
 FORMS    += fileinsight.ui
 

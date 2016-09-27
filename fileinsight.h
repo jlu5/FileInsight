@@ -13,6 +13,8 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFileIconProvider>
+#include <QMimeType>
+//#include <fimimetype.h>
 
 namespace Ui {
 class FileInsight;
@@ -37,7 +39,9 @@ class FileInsight : public QMainWindow
 
     private:
         Ui::FileInsight *ui;
-        magic_t magic_cookie;
+        magic_t magic_cookie = 0;
+        magic_t magic_cookie_mime = 0;
+        QFileIconProvider iconprovider;
 };
 
 #endif // FILEINSIGHT_H
