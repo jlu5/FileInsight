@@ -55,8 +55,12 @@ void FileInsight::openFile(QString filename)
         magic_load(this->magic_cookie, NULL);
     }
 
-    // Convert QString into const char *, so that it can be plugged into the libmagic C library
-    const char * cfilename = filename.toUtf8().data();
+    /* Convert QString into const char *, so that it can be plugged into the libmagic C library
+     * Note: the QByteArray created by toUtf8() must be kept as a variable and not destroyed, or
+     * the pointer returned by constData() may become invalid.
+     */
+    QByteArray bytes = filename.toUtf8();
+    const char * cfilename = bytes.constData();
 
     // Call libmagic on the filename - it will return a string describing the file.
     const char * magic_output = magic_file(this->magic_cookie, cfilename);
@@ -75,11 +79,6 @@ void FileInsight::openFile(QString filename)
         magic_load(this->magic_cookie_mime, NULL);
     }
 
-    /*
-    QFileInfo fileinfo(filename);
-    QFileIconProvider iconprovider;
-    QIcon icon = iconprovider.icon(fileinfo);
-    */
     // Fetch the MIME type for the given file: this allows us to fetch an icon for it.
     QString mimetype = magic_file(this->magic_cookie_mime, cfilename);
     //std::cout << "errors?: " << magic_error(this->magic_cookie_mime);
