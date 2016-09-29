@@ -67,11 +67,6 @@ void FileInsight::openFile(QString filename)
     const char * magic_output = magic_file(this->magic_cookie, cfilename);
     std::cout << "libmagic output: " << magic_output << std::endl;
 
-    // Format the libmagic output with some headings and display it
-    QString displaytext = "File: " +filename + "\n\n";
-    displaytext.append(magic_output);
-    ui->output->setPlainText(displaytext);
-
     /* A second cookie (libmagic initialized with different options) allows us to fetch the MIME
      * type of the file instead of the description.
      */
@@ -82,6 +77,7 @@ void FileInsight::openFile(QString filename)
 
     // Fetch the MIME type for the given file: this allows us to fetch an icon for it.
     QString mimetype = magic_file(this->magic_cookie_mime, cfilename);
+    QString iconname = mimetype;
     //std::cout << "errors?: " << magic_error(this->magic_cookie_mime);
 
     /* Generic MIME types are created by taking first part of the type (e.g. "video" from "video/ogg")
@@ -90,21 +86,28 @@ void FileInsight::openFile(QString filename)
     QString generic_type = mimetype.split("/")[0] + "-x-generic";
 
     // Replace any "/" with "-" in the MIME type before icon lookup.
-    int slashlocation = mimetype.indexOf("/");
+    ui->iconDisplay->setText(mimetype);
+    int slashlocation = iconname.indexOf("/");
 
     if (slashlocation != -1) {
-        mimetype.replace(slashlocation, 1, "-");
+        iconname.replace(slashlocation, 1, "-");
     }
 
     std::cout << "Looking up icon for MIME type " << mimetype.toStdString() <<
                  " (generic name: " << generic_type.toStdString() << ")" << std::endl;
+
+    // Display everything
+    ui->output->setPlainText(magic_output);
+    ui->filenameOutput->setPlainText(filename);
+    ui->mimeOutput->setPlainText(mimetype);
+
     QIcon icon;
-    if (QIcon::hasThemeIcon(mimetype)) {
+    if (QIcon::hasThemeIcon(iconname)) {
         // If the theme we're using has an icon for the MIME type we're using for,
         // prefer that,
-        icon = QIcon::fromTheme(mimetype);
+        icon = QIcon::fromTheme(iconname);
     } else {
-        // Otherwise, fall back to the generic type.
+        // Otherwise, fall back to the generic type; if that also fails, use the generic file icon.
         icon = QIcon::fromTheme(generic_type, this->iconprovider.icon(QFileIconProvider::File));
     }
 
