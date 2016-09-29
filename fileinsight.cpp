@@ -49,7 +49,8 @@ void FileInsight::openFile(QString filename)
      * https://linux.die.net/man/3/libmagic
      */
     if (this->magic_cookie == 0) {
-        this->magic_cookie = magic_open(MAGIC_CHECK); // libmagic flags (e.g. MAGIC_CHECK) go here
+        // libmagic flags (e.g. MAGIC_CHECK) go here
+        this->magic_cookie = magic_open(MAGIC_CHECK | MAGIC_COMPRESS);
 
         // Tell libmagic to load the default file type definitions by passing NULL as filename argument
         magic_load(this->magic_cookie, NULL);
