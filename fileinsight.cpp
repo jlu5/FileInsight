@@ -112,7 +112,7 @@ void FileInsight::openFile(QString filename)
     }
 
 
-    ui->iconDisplay->setPixmap(icon.pixmap(64,64));
+    ui->iconDisplay->setPixmap(icon.pixmap(128,128));
 }
 
 void FileInsight::on_selectFileButton_clicked()
