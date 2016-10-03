@@ -11,10 +11,9 @@
 #include <QPaintEvent>
 #include <QWidget>
 #include <QFileDialog>
-#include <QFileInfo>
+#include <QByteArray>
 #include <QFileIconProvider>
 #include <QMimeType>
-//#include <fimimetype.h>
 
 namespace Ui {
 class FileInsight;
@@ -29,6 +28,9 @@ class FileInsight : public QMainWindow
         ~FileInsight();
         void openFile(QString filename);
         void chooseFile();
+        void showIcon(QString mimetype);
+        QString getMimeType();
+        QString getMagicInfo();
 
     private slots:
         void on_actionQuit_triggered();
@@ -42,6 +44,10 @@ class FileInsight : public QMainWindow
         magic_t magic_cookie = 0;
         magic_t magic_cookie_mime = 0;
         QFileIconProvider iconprovider;
+        const char * cfilename;
+        QByteArray filename_bytes;
+        QString last_filename;
+        QIcon icon;
 };
 
 #endif // FILEINSIGHT_H

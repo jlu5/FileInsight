@@ -40,10 +40,8 @@ void FileInsight::chooseFile()
     }
 }
 
-void FileInsight::openFile(QString filename)
+QString FileInsight::getMagicInfo()
 {
-    std::cout << "magic cookie: " << this->magic_cookie << std::endl;
-
     /* Initialize libmagic by fetching ourselves special cookies from magic_open() - this is
      * similar to fetching a specific instance of a class. More information about the libmagic API:
      * https://linux.die.net/man/3/libmagic
@@ -56,17 +54,13 @@ void FileInsight::openFile(QString filename)
         magic_load(this->magic_cookie, NULL);
     }
 
-    /* Convert QString into const char *, so that it can be plugged into the libmagic C library
-     * Note: the QByteArray created by toUtf8() must be kept as a variable and not destroyed, or
-     * the pointer returned by constData() may become invalid.
-     */
-    QByteArray bytes = filename.toUtf8();
-    const char * cfilename = bytes.constData();
-
     // Call libmagic on the filename - it will return a string describing the file.
-    const char * magic_output = magic_file(this->magic_cookie, cfilename);
-    std::cout << "libmagic output: " << magic_output << std::endl;
+    QString magic_output = magic_file(this->magic_cookie, this->cfilename);
+    return magic_output;
+}
 
+QString FileInsight::getMimeType()
+{
     /* A second cookie (libmagic initialized with different options) allows us to fetch the MIME
      * type of the file instead of the description.
      */
@@ -76,7 +70,12 @@ void FileInsight::openFile(QString filename)
     }
 
     // Fetch the MIME type for the given file: this allows us to fetch an icon for it.
-    QString mimetype = magic_file(this->magic_cookie_mime, cfilename);
+    QString mimetype = magic_file(this->magic_cookie_mime, this->cfilename);
+    return mimetype;
+}
+
+void FileInsight::showIcon(QString mimetype) {
+    // On *nix systems, the icon name is derived from the mime type.
     QString iconname = mimetype;
     //std::cout << "errors?: " << magic_error(this->magic_cookie_mime);
 
@@ -86,9 +85,7 @@ void FileInsight::openFile(QString filename)
     QString generic_type = mimetype.split("/")[0] + "-x-generic";
 
     // Replace any "/" with "-" in the MIME type before icon lookup.
-    ui->iconDisplay->setText(mimetype);
     int slashlocation = iconname.indexOf("/");
-
     if (slashlocation != -1) {
         iconname.replace(slashlocation, 1, "-");
     }
@@ -96,23 +93,39 @@ void FileInsight::openFile(QString filename)
     std::cout << "Looking up icon for MIME type " << mimetype.toStdString() <<
                  " (generic name: " << generic_type.toStdString() << ")" << std::endl;
 
-    // Display everything
-    ui->output->setPlainText(magic_output);
-    ui->filenameOutput->setPlainText(filename);
-    ui->mimeOutput->setPlainText(mimetype);
-
-    QIcon icon;
+    // Show the icon
     if (QIcon::hasThemeIcon(iconname)) {
         // If the theme we're using has an icon for the MIME type we're using for,
-        // prefer that,
-        icon = QIcon::fromTheme(iconname);
+        // prefer that.
+        this->icon = QIcon::fromTheme(iconname);
     } else {
         // Otherwise, fall back to the generic type; if that also fails, use the generic file icon.
-        icon = QIcon::fromTheme(generic_type, this->iconprovider.icon(QFileIconProvider::File));
+        this->icon = QIcon::fromTheme(generic_type, this->iconprovider.icon(QFileIconProvider::File));
     }
 
-
     ui->iconDisplay->setPixmap(icon.pixmap(128,128));
+}
+
+void FileInsight::openFile(QString filename)
+{
+    /* Convert QString into const char *, so that it can be plugged into the libmagic C library
+     * Note: the QByteArray created by toUtf8() must be kept as a variable and not destroyed, or
+     * the pointer returned by constData() may become invalid.
+     */
+    this->last_filename = filename;
+    ui->filenameOutput->setPlainText(filename);
+    this->filename_bytes = filename.toUtf8();
+    this->cfilename = this->filename_bytes.constData();
+
+    // Get libmagic info and display it
+    QString magic_output = this->getMagicInfo();
+    ui->output->setPlainText(magic_output);
+
+    // Get the MIME type and use it to fetch the icon
+    QString mimetype = this->getMimeType();
+    ui->mimeOutput->setPlainText(mimetype);
+    this->showIcon(mimetype);
+
 }
 
 void FileInsight::on_selectFileButton_clicked()
