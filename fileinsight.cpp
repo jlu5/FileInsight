@@ -59,6 +59,17 @@ QString FileInsight::getMagicInfo()
     return magic_output;
 }
 
+QString FileInsight::getTridInfo()
+{
+    // This method gets extended file info using the TrID command line program,
+    // by running it in a subprocess.
+    QProcess process;
+    process.start("trid", QStringList() << this->last_filename);
+    QByteArray result = process.readAll();
+    QString data = result.data();
+    return data;
+}
+
 QString FileInsight::getMimeType()
 {
     /* A second cookie (libmagic initialized with different options) allows us to fetch the MIME
@@ -120,6 +131,8 @@ void FileInsight::openFile(QString filename)
     // Get libmagic info and display it
     QString magic_output = this->getMagicInfo();
     ui->output->setPlainText(magic_output);
+
+    // TODO: IMPLEMENT TRID BACKEND
 
     // Get the MIME type and use it to fetch the icon
     QString mimetype = this->getMimeType();

@@ -8,12 +8,11 @@
 
 #include <QMainWindow>
 #include <QIcon>
-#include <QPaintEvent>
 #include <QWidget>
 #include <QFileDialog>
 #include <QByteArray>
 #include <QFileIconProvider>
-#include <QMimeType>
+#include <QProcess>
 
 namespace Ui {
 class FileInsight;
@@ -31,6 +30,7 @@ class FileInsight : public QMainWindow
         void showIcon(QString mimetype);
         QString getMimeType();
         QString getMagicInfo();
+        QString getTridInfo();
 
     private slots:
         void on_actionQuit_triggered();
