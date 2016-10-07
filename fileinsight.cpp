@@ -63,10 +63,17 @@ QString FileInsight::getTridInfo()
 {
     // This method gets extended file info using the TrID command line program,
     // by running it in a subprocess.
-    QProcess process;
-    process.start("trid", QStringList() << this->last_filename);
-    QByteArray result = process.readAll();
+    this->trid_subprocess.start("trid", QStringList() << this->last_filename);
+
+    QByteArray result;
+    // Grab all of the subprocess' text output in a loop.
+    while (this->trid_subprocess.waitForReadyRead())
+    {
+        result += this->trid_subprocess.readAll();
+    }
     QString data = result.data();
+    // Trim to remove leading & trailing whitespace
+    data = data.trimmed();
     return data;
 }
 
@@ -75,13 +82,32 @@ QString FileInsight::getMimeType()
     /* A second cookie (libmagic initialized with different options) allows us to fetch the MIME
      * type of the file instead of the description.
      */
-    if (this->magic_cookie_mime == 0) {
-        this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
-        magic_load(this->magic_cookie_mime, NULL);
-    }
 
-    // Fetch the MIME type for the given file: this allows us to fetch an icon for it.
-    QString mimetype = magic_file(this->magic_cookie_mime, this->cfilename);
+    QString mimetype;
+    if (ui->backend_qt->isChecked() || ui->backend_qt_fileonly->isChecked()) {
+        // Qt5 / QMimeDatabase backend
+        QMimeDatabase mimedb;
+        std::cout << "getMimeType(): Using Qt5/QMimeDatabase backend" << std::endl;
+
+        QMimeType mimeobj;
+        if (ui->backend_qt_fileonly->isChecked())
+        {
+            mimeobj = mimedb.mimeTypeForFile(this->last_filename, QMimeDatabase::MatchContent);
+        } else {
+            mimeobj = mimedb.mimeTypeForFile(this->last_filename);
+        }
+        mimetype = mimeobj.name();
+    } else {
+        // libmagic MIME type backend
+        std::cout << "getMimeType(): Using libmagic backend" << std::endl;
+        if (this->magic_cookie_mime == 0) {
+            this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
+            magic_load(this->magic_cookie_mime, NULL);
+        }
+
+        // Fetch the MIME type for the given file: this allows us to fetch an icon for it.
+        mimetype = magic_file(this->magic_cookie_mime, this->cfilename);
+    }
     return mimetype;
 }
 
@@ -128,11 +154,15 @@ void FileInsight::openFile(QString filename)
     this->filename_bytes = filename.toUtf8();
     this->cfilename = this->filename_bytes.constData();
 
-    // Get libmagic info and display it
-    QString magic_output = this->getMagicInfo();
-    ui->output->setPlainText(magic_output);
-
-    // TODO: IMPLEMENT TRID BACKEND
+    QString ext_info;
+    // Fill in extended info: use TrID or libmagic backends (whichever is selected)
+    if (ui->backend_trid->isChecked())
+    {
+        ext_info = this->getTridInfo();
+    } else if (ui->backend_magic->isChecked()) {
+        ext_info = this->getMagicInfo();
+    }
+    ui->output->setPlainText(ext_info);
 
     // Get the MIME type and use it to fetch the icon
     QString mimetype = this->getMimeType();
@@ -149,4 +179,9 @@ void FileInsight::on_selectFileButton_clicked()
 void FileInsight::on_actionSelect_triggered()
 {
     this->chooseFile();
+}
+
+void FileInsight::on_reloadButton_clicked()
+{
+    this->openFile(this->last_filename);
 }

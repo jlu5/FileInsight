@@ -13,6 +13,7 @@
 #include <QByteArray>
 #include <QFileIconProvider>
 #include <QProcess>
+#include <QMimeDatabase>
 
 namespace Ui {
 class FileInsight;
@@ -39,7 +40,9 @@ class FileInsight : public QMainWindow
 
         void on_actionSelect_triggered();
 
-    private:
+        void on_reloadButton_clicked();
+
+private:
         Ui::FileInsight *ui;
         magic_t magic_cookie = 0;
         magic_t magic_cookie_mime = 0;
@@ -48,6 +51,7 @@ class FileInsight : public QMainWindow
         QByteArray filename_bytes;
         QString last_filename;
         QIcon icon;
+        QProcess trid_subprocess;
 };
 
 #endif // FILEINSIGHT_H

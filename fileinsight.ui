@@ -34,7 +34,7 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>32</height>
+             <height>48</height>
             </size>
            </property>
            <property name="readOnly">
@@ -46,7 +46,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QGroupBox" name="groupBox_2">
+       <widget class="QGroupBox" name="mimeGroup">
         <property name="title">
          <string>MIME type</string>
         </property>
@@ -84,6 +84,12 @@
       </item>
       <item>
        <widget class="QGroupBox" name="outputGroup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="title">
          <string>Extended info</string>
         </property>
@@ -137,15 +143,73 @@
        </widget>
       </item>
       <item>
+       <widget class="QGroupBox" name="backendGroup">
+        <property name="title">
+         <string>Backend</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <item>
+          <widget class="QRadioButton" name="backend_magic">
+           <property name="text">
+            <string>libmagic</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="backend_trid">
+           <property name="toolTip">
+            <string>Extended info only; better for binaries</string>
+           </property>
+           <property name="text">
+            <string>TrID (ext. info
+only)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="backend_qt">
+           <property name="toolTip">
+            <string>MIME Type only</string>
+           </property>
+           <property name="text">
+            <string>Qt5</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="backend_qt_fileonly">
+           <property name="text">
+            <string>Qt5 (contents
+only)</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="selectFileButton">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="text">
          <string>Select File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="reloadButton">
+        <property name="text">
+         <string>Reload</string>
         </property>
        </widget>
       </item>
