@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>438</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -167,8 +167,7 @@
             <string>Extended info only; better for binaries</string>
            </property>
            <property name="text">
-            <string>TrID (ext. info
-only)</string>
+            <string>libmagic+TrID </string>
            </property>
           </widget>
          </item>
@@ -185,8 +184,8 @@ only)</string>
          <item>
           <widget class="QRadioButton" name="backend_qt_fileonly">
            <property name="text">
-            <string>Qt5 (contents
-only)</string>
+            <string>Qt5 (check
+data only)</string>
            </property>
           </widget>
          </item>

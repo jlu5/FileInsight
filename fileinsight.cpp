@@ -63,6 +63,9 @@ QString FileInsight::getTridInfo()
 {
     // This method gets extended file info using the TrID command line program,
     // by running it in a subprocess.
+
+    QString data;
+
     this->trid_subprocess.start("trid", QStringList() << this->last_filename);
 
     QByteArray result;
@@ -71,9 +74,19 @@ QString FileInsight::getTridInfo()
     {
         result += this->trid_subprocess.readAll();
     }
-    QString data = result.data();
+    data = result.data();
     // Trim to remove leading & trailing whitespace
     data = data.trimmed();
+
+    if (data.isEmpty())
+    {
+        // The TrID process failed to start or otherwise returned no data.
+        // Raise an error.
+        QMessageBox::critical(this, tr("Failed to start TrID"),
+                             tr("An error occurred while retrieving data from the TrID backend. "
+                                "Check that TrID is installed and in your PATH!"));
+    }
+
     return data;
 }
 
@@ -183,5 +196,9 @@ void FileInsight::on_actionSelect_triggered()
 
 void FileInsight::on_reloadButton_clicked()
 {
-    this->openFile(this->last_filename);
+    if (!this->last_filename.isEmpty()) {
+        this->openFile(this->last_filename);
+     } else {
+        QMessageBox::critical(this, tr("No file selected"), tr("You must select a file before reloading!"));
+    }
 }

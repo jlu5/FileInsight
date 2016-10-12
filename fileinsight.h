@@ -14,6 +14,7 @@
 #include <QFileIconProvider>
 #include <QProcess>
 #include <QMimeDatabase>
+#include <QMessageBox>
 
 namespace Ui {
 class FileInsight;
