@@ -3,15 +3,39 @@
 #include "ui_fileinsight.h"
 
 // Main window class
-FileInsight::FileInsight(QWidget *parent) :
-    // Call the QMainWindow constructor in order make this widget a new window
-    QMainWindow(parent),
-
+FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::FileInsight) {
     // Set up the UI by creating an instance of our UI class and initializing it
-    ui(new Ui::FileInsight)
-    {
-        ui->setupUi(this);
-    }
+
+    ui->setupUi(this);
+
+#ifdef Q_OS_WIN
+    // On Windows, use an absolute path for TrID (in our thirdparty/ folder)
+    QString appdir = QCoreApplication::applicationDirPath();
+    this->trid_command = appdir + "/thirdparty/trid";
+
+    // Set the path and name of our bundled icon theme
+    QIcon::setThemeName("oxygen");
+    QIcon::setThemeSearchPaths(QStringList() << appdir + "/icons");
+#else
+    this->trid_command = "trid";
+#endif
+
+    /* Initialize libmagic by fetching ourselves special cookies from magic_open() - this is
+     * similar to fetching a specific instance of a class. More information about the libmagic API:
+     * https://linux.die.net/man/3/libmagic
+     */
+    // libmagic flags (e.g. MAGIC_CHECK) go here
+    this->magic_cookie = magic_open(MAGIC_CHECK | MAGIC_COMPRESS);
+
+    // Tell libmagic to load the default file type definitions by passing NULL as filename argument
+    magic_load(this->magic_cookie, NULL);
+
+    // Repeat the above process for a second instance of libmagic, specifically used to find MIME
+    // types. (MAGIC_MIME_TYPE set)
+    this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
+    magic_load(this->magic_cookie_mime, NULL);
+
+}
 
 // Destructor for the FileInsight class:
 FileInsight::~FileInsight()
@@ -42,18 +66,6 @@ void FileInsight::chooseFile()
 
 QString FileInsight::getMagicInfo()
 {
-    /* Initialize libmagic by fetching ourselves special cookies from magic_open() - this is
-     * similar to fetching a specific instance of a class. More information about the libmagic API:
-     * https://linux.die.net/man/3/libmagic
-     */
-    if (this->magic_cookie == 0) {
-        // libmagic flags (e.g. MAGIC_CHECK) go here
-        this->magic_cookie = magic_open(MAGIC_CHECK | MAGIC_COMPRESS);
-
-        // Tell libmagic to load the default file type definitions by passing NULL as filename argument
-        magic_load(this->magic_cookie, NULL);
-    }
-
     // Call libmagic on the filename - it will return a string describing the file.
     QString magic_output = magic_file(this->magic_cookie, this->cfilename);
     return magic_output;
@@ -66,7 +78,8 @@ QString FileInsight::getTridInfo()
 
     QString data;
 
-    this->trid_subprocess.start("trid", QStringList() << this->last_filename);
+    // FIXME: this breaks if there's a - in the filename
+    this->trid_subprocess.start(this->trid_command, QStringList() << "\"" << this->last_filename << "\"");
 
     QByteArray result;
     // Grab all of the subprocess' text output in a loop.
@@ -113,11 +126,6 @@ QString FileInsight::getMimeType()
     } else {
         // libmagic MIME type backend
         std::cout << "getMimeType(): Using libmagic backend" << std::endl;
-        if (this->magic_cookie_mime == 0) {
-            this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
-            magic_load(this->magic_cookie_mime, NULL);
-        }
-
         // Fetch the MIME type for the given file: this allows us to fetch an icon for it.
         mimetype = magic_file(this->magic_cookie_mime, this->cfilename);
     }
@@ -143,14 +151,22 @@ void FileInsight::showIcon(QString mimetype) {
     std::cout << "Looking up icon for MIME type " << mimetype.toStdString() <<
                  " (generic name: " << generic_type.toStdString() << ")" << std::endl;
 
-    // Show the icon
     if (QIcon::hasThemeIcon(iconname)) {
-        // If the theme we're using has an icon for the MIME type we're using for,
-        // prefer that.
+        /* If the icon theme we're using has an icon for the MIME type we're looking for,
+         * use that.
+         */
         this->icon = QIcon::fromTheme(iconname);
     } else {
-        // Otherwise, fall back to the generic type; if that also fails, use the generic file icon.
-        this->icon = QIcon::fromTheme(generic_type, this->iconprovider.icon(QFileIconProvider::File));
+        /* Otherwise, fall back to the following in order:
+         * 1) The icon for the generic type (e.g. a "video" icon for .mp4 files)
+         * 2) The unknown file type icon in the icon theme used
+         * 3) Qt's (small) generic file icon.
+         */
+        if (QIcon::hasThemeIcon(generic_type)) {
+            this->icon = QIcon::fromTheme(generic_type);
+        } else {
+            this->icon = QIcon::fromTheme("unknown", this->iconprovider.icon(QFileIconProvider::File));
+        }
     }
 
     ui->iconDisplay->setPixmap(icon.pixmap(128,128));
