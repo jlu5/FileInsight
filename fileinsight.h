@@ -1,14 +1,14 @@
 // Header file for FileInsight
-
-#include <magic.h>
-#include <iostream>
-
 #ifndef FILEINSIGHT_H
 #define FILEINSIGHT_H
 
-#include <QMainWindow>
-#include <QIcon>
+#include <magic.h>
+#include <iostream>
+#include "constants.h"
+#include "fileinsightsubdialog.h"
+
 #include <QWidget>
+#include <QMainWindow>
 #include <QFileDialog>
 #include <QByteArray>
 #include <QFileIconProvider>
@@ -28,33 +28,31 @@ class FileInsight : public QMainWindow
 public:
     explicit FileInsight(QWidget *parent = 0);
     ~FileInsight();
-    void openFile(QString filename);
-    void chooseFile();
-    void showIcon(QString mimetype);
-    QString getMimeType();
-    QString getMagicInfo();
-    QString getTridInfo();
+    int getBackend();
 
 private slots:
     void on_actionQuit_triggered();
-
     void on_selectFileButton_clicked();
-
     void on_actionSelect_triggered();
-
     void on_reloadButton_clicked();
 
 private:
     Ui::FileInsight *ui;
+
+    void chooseFile();
+    void openFile(QString filename);
+    QIcon getIcon(QString mimetype);
+    QString getMimeType(QString filename);
+    QString getMagicInfo(QString filename);
+    QString getTridInfo(QString filename);
+    const char * QStringToConstChar(QString text);
+    FileInsightSubdialog * getCurrentTab();
+
+    QProcess trid_subprocess;
+    QString trid_command;
     magic_t magic_cookie;
     magic_t magic_cookie_mime;
     QFileIconProvider iconprovider;
-    const char * cfilename;
-    QByteArray filename_bytes;
-    QString last_filename;
-    QIcon icon;
-    QProcess trid_subprocess;
-    QString trid_command;
 };
 
 #endif // FILEINSIGHT_H
