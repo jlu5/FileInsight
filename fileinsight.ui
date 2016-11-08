@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="tabsClosable">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
     </item>

@@ -46,6 +46,7 @@ FileInsightSubdialog * FileInsight::newTab()
     int newIndex = ui->tabWidget->addTab(new FileInsightSubdialog(this), tr("New Tab"));
     // Set the focus to the new tab as it is created.
     ui->tabWidget->setCurrentIndex(newIndex);
+
     return (FileInsightSubdialog *) ui->tabWidget->widget(newIndex);
 }
 
@@ -265,8 +266,15 @@ void FileInsight::on_reloadButton_clicked()
 
 void FileInsight::on_tabWidget_tabCloseRequested(int index)
 {
-    if (ui->tabWidget->count() >= 2) {
+    int count = ui->tabWidget->count();
+    if (count >= 2) {
         ui->tabWidget->removeTab(index);
+
+        // If there were only 2 tabs (1 now since the current was closed),
+        // disable the close button on the last tab.
+        if (count == 2) {
+            ui->tabWidget->setTabsClosable(false);
+        }
     } else {
         std::cout << "Refusing to remove the last tab!" << std::endl;
     }
@@ -274,5 +282,7 @@ void FileInsight::on_tabWidget_tabCloseRequested(int index)
 
 void FileInsight::on_addTabButton_clicked()
 {
+    // If closing tabs was disabled, enable it again.
+    ui->tabWidget->setTabsClosable(true);
     this->newTab();
 }
