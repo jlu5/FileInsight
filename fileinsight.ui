@@ -16,7 +16,11 @@
   <widget class="QWidget" name="widget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget"/>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item>
      <layout class="QVBoxLayout" name="rightside">
@@ -90,6 +94,13 @@ data only)</string>
        <widget class="QPushButton" name="reloadButton">
         <property name="text">
          <string>Reload</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="addTabButton">
+        <property name="text">
+         <string>New Tab</string>
         </property>
        </widget>
       </item>

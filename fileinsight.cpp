@@ -37,8 +37,16 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
     this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
     magic_load(this->magic_cookie_mime, NULL);
 
-    ui->tabWidget->addTab(new FileInsightSubdialog(this), tr("CHANGE THIS"));
+    this->newTab();
 
+}
+
+FileInsightSubdialog * FileInsight::newTab()
+{
+    int newIndex = ui->tabWidget->addTab(new FileInsightSubdialog(this), tr("New Tab"));
+    // Set the focus to the new tab as it is created.
+    ui->tabWidget->setCurrentIndex(newIndex);
+    return (FileInsightSubdialog *) ui->tabWidget->widget(newIndex);
 }
 
 // Destructor for the FileInsight class:
@@ -171,6 +179,11 @@ void FileInsight::openFile(QString filename)
     currentTab->ui->filenameOutput->setPlainText(filename);
     currentTab->filename = filename;
 
+    // Update the name of the tab to be the file name, stripped of the full path.
+    QFileInfo fi(filename);
+    QString stripped_filename = fi.fileName();
+    ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), stripped_filename);
+
     QString ext_info;
     int backend = this->getBackend();
     // Fill in extended info: use TrID or libmagic backends (whichever is selected)
@@ -248,4 +261,18 @@ void FileInsight::on_reloadButton_clicked()
      } else {
         QMessageBox::critical(this, tr("No file selected"), tr("You must select a file before reloading!"));
     }
+}
+
+void FileInsight::on_tabWidget_tabCloseRequested(int index)
+{
+    if (ui->tabWidget->count() >= 2) {
+        ui->tabWidget->removeTab(index);
+    } else {
+        std::cout << "Refusing to remove the last tab!" << std::endl;
+    }
+}
+
+void FileInsight::on_addTabButton_clicked()
+{
+    this->newTab();
 }

@@ -28,7 +28,16 @@ class FileInsight : public QMainWindow
 public:
     explicit FileInsight(QWidget *parent = 0);
     ~FileInsight();
+    void chooseFile();
     int getBackend();
+    FileInsightSubdialog * getCurrentTab();
+    QIcon getIcon(QString mimetype);
+    QString getMagicInfo(QString filename);
+    QString getMimeType(QString filename);
+    QString getTridInfo(QString filename);
+    FileInsightSubdialog * newTab();
+    void openFile(QString filename);
+    const char * QStringToConstChar(QString text);
 
 private slots:
     void on_actionQuit_triggered();
@@ -36,17 +45,12 @@ private slots:
     void on_actionSelect_triggered();
     void on_reloadButton_clicked();
 
+    void on_tabWidget_tabCloseRequested(int index);
+
+    void on_addTabButton_clicked();
+
 private:
     Ui::FileInsight *ui;
-
-    void chooseFile();
-    void openFile(QString filename);
-    QIcon getIcon(QString mimetype);
-    QString getMimeType(QString filename);
-    QString getMagicInfo(QString filename);
-    QString getTridInfo(QString filename);
-    const char * QStringToConstChar(QString text);
-    FileInsightSubdialog * getCurrentTab();
 
     QProcess trid_subprocess;
     QString trid_command;
