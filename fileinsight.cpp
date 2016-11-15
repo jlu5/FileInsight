@@ -10,6 +10,9 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
 
     ui->setupUi(this);
 
+    // ALlow drag and drop
+    setAcceptDrops(true);
+
 #ifdef Q_OS_WIN
     // On Windows, use an absolute path for TrID (in our thirdparty/ folder)
     QString appdir = QCoreApplication::applicationDirPath();
@@ -285,4 +288,28 @@ void FileInsight::on_addTabButton_clicked()
     // If closing tabs was disabled, enable it again.
     ui->tabWidget->setTabsClosable(true);
     this->newTab();
+}
+
+
+void FileInsight::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void FileInsight::dropEvent(QDropEvent *event)
+{
+    // Partly based off https://wiki.qt.io/Drag_and_Drop_of_files
+    //QList<QUrl> urlList = event->mimeData()->urls();
+    QUrl url;
+    QString localUrl;
+    foreach (url, event->mimeData()->urls()) {
+        localUrl = url.toLocalFile();
+        std::cout << localUrl.toStdString() << std::endl;
+
+        // Create a new tab and open each file that was given.
+        this->newTab();
+        this->openFile(localUrl);
+    }
 }

@@ -19,15 +19,6 @@ public:
     Ui::FileInsightSubdialog *ui;
     QString filename;
 
-/*
-private slots:
-    void on_selectFileButton_clicked();
-
-    void on_actionSelect_triggered();
-
-    void on_reloadButton_clicked();
-*/
-
 private:
 };
 

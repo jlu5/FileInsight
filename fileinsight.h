@@ -16,6 +16,11 @@
 #include <QMimeDatabase>
 #include <QMessageBox>
 #include <QProcessEnvironment>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QUrl>
+#include <QMimeData>
+#include <QList>
 
 namespace Ui {
 class FileInsight;
@@ -57,6 +62,9 @@ private:
     magic_t magic_cookie;
     magic_t magic_cookie_mime;
     QFileIconProvider iconprovider;
+
+    void FileInsight::dragEnterEvent(QDragEnterEvent *event);
+    void FileInsight::dropEvent(QDropEvent *event);
 };
 
 #endif // FILEINSIGHT_H
