@@ -40,15 +40,20 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
     this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
     magic_load(this->magic_cookie_mime, NULL);
 
-    this->newTab();
+    this->newTab(true);
 
 }
 
-FileInsightSubdialog * FileInsight::newTab()
+FileInsightSubdialog * FileInsight::newTab(bool starting)
 {
     int newIndex = ui->tabWidget->addTab(new FileInsightSubdialog(this), tr("New Tab"));
     // Set the focus to the new tab as it is created.
     ui->tabWidget->setCurrentIndex(newIndex);
+
+    if (!starting) {
+        // If closing tabs was disabled, enable it again.
+        ui->tabWidget->setTabsClosable(true);
+    }
 
     return (FileInsightSubdialog *) ui->tabWidget->widget(newIndex);
 }
@@ -285,8 +290,6 @@ void FileInsight::on_tabWidget_tabCloseRequested(int index)
 
 void FileInsight::on_addTabButton_clicked()
 {
-    // If closing tabs was disabled, enable it again.
-    ui->tabWidget->setTabsClosable(true);
     this->newTab();
 }
 

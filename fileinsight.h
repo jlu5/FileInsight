@@ -40,7 +40,7 @@ public:
     QString getMagicInfo(QString filename);
     QString getMimeType(QString filename);
     QString getTridInfo(QString filename);
-    FileInsightSubdialog * newTab();
+    FileInsightSubdialog * newTab(bool starting = false);
     void openFile(QString filename);
     const char * QStringToConstChar(QString text);
 
