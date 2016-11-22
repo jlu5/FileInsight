@@ -202,6 +202,12 @@ void FileInsight::openFile(QString filename, bool overwrite)
 
     // Update the name of the tab to be the file name, stripped of the full path.
     QFileInfo fi(filename);
+
+    if (!fi.exists()) {
+        QMessageBox::critical(this, tr("Error reading file"), "Can't find \"" + filename + "\"");
+        return;
+    }
+
     QString stripped_filename = fi.fileName();
     ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), stripped_filename);
 
