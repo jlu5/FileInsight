@@ -6,6 +6,8 @@ int main(int argc, char *argv[])
 {
     // Main function: create a Qt application using the command line arguments given
     QApplication a(argc, argv);
+    QCoreApplication::setApplicationName("FileInsight");
+    QCoreApplication::setApplicationVersion("0.3-beta1");
 
     // Handle command line arguments such as --help and a filename list
     QCommandLineParser parser;

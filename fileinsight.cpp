@@ -312,6 +312,17 @@ void FileInsight::on_addTabButton_clicked()
 }
 
 
+void FileInsight::on_actionAbout_triggered()
+{
+    QMessageBox::about(this, tr("About FileInsight"),
+                       tr("This is FileInsight %1 by J. Lu").arg(QCoreApplication::applicationVersion()));
+}
+
+void FileInsight::on_actionAbout_Qt_triggered()
+{
+    QMessageBox::aboutQt(this);
+}
+
 void FileInsight::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasUrls()) {

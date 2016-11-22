@@ -129,6 +129,7 @@ data only)</string>
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionAbout_Qt"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
@@ -145,7 +146,12 @@ data only)</string>
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About FileInsight</string>
+    <string>&amp;About FileInsight</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt">
+   <property name="text">
+    <string>About &amp;Qt</string>
    </property>
   </action>
  </widget>
