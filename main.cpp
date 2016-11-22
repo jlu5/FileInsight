@@ -20,13 +20,9 @@ int main(int argc, char *argv[])
     QStringList args = parser.positionalArguments();
     int argcount = args.count();
 
-    // Open every file, and spawn a new tab unless we're at the last file.
+    // Open every file, and spawn a new tab for each.
    for (int i=0; i<argcount; i++) {
-        w.openFile(args[i]);
-
-        if (argcount-1 != i) {
-            w.newTab();
-        }
+        w.openFile(args[i], false);
     }
 
     w.show();

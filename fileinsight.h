@@ -41,7 +41,7 @@ public:
     QString getMimeType(QString filename);
     QString getTridInfo(QString filename);
     FileInsightSubdialog * newTab(bool starting = false);
-    void openFile(QString filename);
+    void openFile(QString filename, bool starting = true);
     const char * QStringToConstChar(QString text);
 
 private slots:

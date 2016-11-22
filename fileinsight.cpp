@@ -182,15 +182,22 @@ FileInsightSubdialog* FileInsight::getCurrentTab() {
     return (FileInsightSubdialog *) ui->tabWidget->currentWidget();
 }
 
-void FileInsight::openFile(QString filename)
+void FileInsight::openFile(QString filename, bool overwrite)
 {
-    //FileInsightSubdialog *currentTab = (FileInsightSubdialog *) ui->tabWidget->currentWidget();
     FileInsightSubdialog *currentTab = this->getCurrentTab();
+
+    if (!currentTab->filename.isEmpty() && !overwrite) {
+        // If the current tab already has a file loaded and overwriting wasn't enabled,
+        // automatically create a new tab.
+        currentTab = this->newTab();
+    }
+
     /* Convert QString into const char *, so that it can be plugged into the libmagic C library
      * Note: the QByteArray created by toUtf8() must be kept as a variable and not destroyed, or
      * the pointer returned by constData() may become invalid.
      */
     currentTab->ui->filenameOutput->setPlainText(filename);
+
     currentTab->filename = filename;
 
     // Update the name of the tab to be the file name, stripped of the full path.
@@ -316,8 +323,7 @@ void FileInsight::dropEvent(QDropEvent *event)
         localUrl = url.toLocalFile();
         std::cout << localUrl.toStdString() << std::endl;
 
-        // Create a new tab and open each file that was given.
-        this->newTab();
-        this->openFile(localUrl);
+        // Create a new tab and open each file that was dropped.
+        this->openFile(localUrl, false);
     }
 }
