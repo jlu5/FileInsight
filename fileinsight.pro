@@ -24,6 +24,7 @@ FORMS    += fileinsight.ui \
 # When compiling on Windows, load our thirdparty/ folder
 win32:INCLUDEPATH += $$PWD\thirdparty\include
 win32:LIBPATH += $$PWD\thirdparty\bin
+win32:LIBPATH += $$PWD\thirdparty\lib
 
 # Link to libmagic for file type detection
 LIBS += -lmagic
