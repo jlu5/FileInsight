@@ -1,0 +1,20 @@
+FileInsight, Qt 5, and libgnurx are available under the GNU Lesser General Public License (LGPL), version 3 or later. See COPYING.LGPL3 for full license details.
+
+The Oxygen Icon Theme is available under the GNU Lesser General Public License (LGPL), version 3 or later, with a special exception for GUIs: see icons/COPYING. The source of the Oxygen Icon Theme can be
+
+libmagic is available under a BSD-like license: see COPYING.libmagic
+
+TrID is available under the following license:
+
+----
+
+TrID (C) 2003-16 By Marco Pontello
+
+Info: http://mark0.net/soft-trid-e.html
+E-Mail: marcopon@gmail.com
+
+License:
+The program can be freely distribuited and is freeware for non commercial,
+personal, research and educational use.
+Contact the author for commercial use or commercialization of TrID or
+TrID's definitions and contained informations.
