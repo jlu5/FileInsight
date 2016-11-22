@@ -173,6 +173,8 @@ int FileInsight::getBackend() {
         return BACKEND_QT;
     } else if (ui->backend_qt_fileonly->isChecked()) {
         return BACKEND_QT_FILEONLY;
+    } else {
+        return -1;
     }
 }
 
