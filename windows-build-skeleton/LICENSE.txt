@@ -1,8 +1,10 @@
 FileInsight, Qt 5, and libgnurx are available under the GNU Lesser General Public License (LGPL), version 3 or later. See COPYING.LGPL3 for full license details.
 
-The Oxygen Icon Theme is available under the GNU Lesser General Public License (LGPL), version 3 or later, with a special exception for GUIs: see icons/COPYING. The source of the Oxygen Icon Theme can be
+The Oxygen Icon Theme is available under the GNU Lesser General Public License (LGPL), version 3 or later, with a special exception for GUIs: see icons/COPYING. The source of the Oxygen Icon Theme can be obtained at https://github.com/kde/oxygen-icons5.
 
-libmagic is available under a BSD-like license: see COPYING.libmagic
+file / libmagic is available under a BSD-like license: see COPYING.libmagic. The source of file / libmagic can be obtained at https://github.com/file/file.
+
+The source of libgnurx can be obtained at https://github.com/glolol/libgnurx.
 
 TrID is available under the following license:
 

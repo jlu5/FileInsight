@@ -20,25 +20,34 @@ Windows builds are a pain (no, really!). Instead, you may want to simply grab a 
 
 #### Getting all the required components
 
-1) Download and install MinGW with MSYS and a base installation: https://sourceforge.net/projects/mingw/files/
+1) Download and install MinGW and MSYS using this guide: http://www.mingw.org/wiki/Getting_Started
 
-2) Install Qt with MinGW from https://www.qt.io/download/. (You can optionally build with FileInsight with MSVC as well, but its dependency libraries have to be compiled or cross-compiled with MinGW).
+2) Install Qt with MinGW from https://www.qt.io/download/..
 
 3) Fetch the sources for [libmagic/file](https://github.com/file/file) and its dependency [libgnurx](https://github.com/glolol/libgnurx)
 
 #### Building libmagic/file
 
-4) Create an empty folder to use as the prefix for building libgnurx and libmagic/file.
+4) Create an empty folder (prefix) to use as the prefix for building libgnurx and libmagic/file.
 
 5) Compile libgnurx into the empty prefix you created: in a MinGW shell, navigate to the source folder and run `./configure --prefix=THE FOLDER YOU CHOSE && make && make install`
 
-6) Compile libmagic/file into the empty prefix you created: in a MinGW shell, navigate to the source folder and run `./configure --prefix=THE FOLDER YOU CHOSE && make && make install`
+6) Compile libmagic/file into the empty prefix you created: in a MinGW shell, navigate to the source folder and run:
 
-7) Now that libmagic and libgnurx have been built, copy the prefix folder into the `thirdparty/` directory of FileInsight's source. On Windows, this is where the toolchain will try to load its dependency libraries from.
+- `export TARGET=THE FOLDER YOU CHOSE`
+- `autoreconf -f -i`
+- `LDFLAGS="-L$TARGET/lib -static-libgcc" CFLAGS="-I$TARGET/include" ./configure --prefix=$TARGET`
+- `make && make install`
+
+7) Now that libmagic and libgnurx have been built, copy the contents of the libmagic build folder into the `thirdparty/` directory of FileInsight's source. On Windows, this is where the toolchain will try to load its dependency libraries from.
 
 #### Building FileInsight (MinGW)
 
-8) You should be able to build FileInsight now using Qt Creator + MinGW. However, in order for the resulting binary to run, you must copy `libgnurx-0.dll`, `libmagic-1.dll`, and `magic.mgc` (libmagic's data file) into the directory of the resultant build.
+8) You should be able to build FileInsight now using Qt Creator + MinGW. However, in order for the resulting binary to run, you must copy the following into the directory of your resultant build:
+    - `bin/libgnurx-0.dll` from the libmagic build
+    - `bin/libmagic-1.dll` from the libmagic build
+    - `share/misc/magic.mgc` (libmagic's data file) from the libmagic build
+    - `libgcc_s_dw2-1.dll` from your MinGW root (e.g. `C:\MinGW\bin`)
 
 #### Making a Redistributable Build
 
@@ -46,7 +55,7 @@ Windows builds are a pain (no, really!). Instead, you may want to simply grab a 
 
 10) Use [windeployqt](https://doc.qt.io/qt-5/windows-deployment.html) to copy the required Qt libraries to the Windows build folder: in a command line, run `windeploy PATH-TO-FILEINSIGHT.EXE`.
 
-11) Copy `libgnurx-0.dll`, `libmagic-1.dll`, and `magic.mgc` into the Windows build folder.
+11) Copy `libgnurx-0.dll`, `libmagic-1.dll`, `libgcc_s_dw2-1.dll`, and `magic.mgc` into the Windows build folder.
 
 12) Optional: for TrID backend support, extract TrID from http://mark0.net/soft-trid-e.html it into the `thirdparty` directory in the Windows build folder.
 
