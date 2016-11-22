@@ -63,8 +63,8 @@ private:
     magic_t magic_cookie_mime;
     QFileIconProvider iconprovider;
 
-    void FileInsight::dragEnterEvent(QDragEnterEvent *event);
-    void FileInsight::dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 };
 
 #endif // FILEINSIGHT_H
