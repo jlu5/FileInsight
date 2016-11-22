@@ -100,8 +100,11 @@ QString FileInsight::getTridInfo(QString filename)
 
     QString data;
 
-    // FIXME: this breaks if there's a - in the filename
-    this->trid_subprocess.start(this->trid_command, QStringList() << "\"" << filename << "\"");
+    // TrID's command line argument handling isn't great (it breaks on filenames with
+    // spaces or hyphens in it), so we use its interactive read-from-STDIN mode instead.
+    this->trid_subprocess.start(this->trid_command, QStringList() << "-@");
+    this->trid_subprocess.write(this->QStringToConstChar(filename));
+    this->trid_subprocess.closeWriteChannel();
 
     QByteArray result;
     // Grab all of the subprocess' text output in a loop.
