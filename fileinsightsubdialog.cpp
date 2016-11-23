@@ -1,3 +1,4 @@
+// fileinsightsubdialog.cpp: Subwidget used inside tabs, with text boxes for displaying information.
 #include "fileinsightsubdialog.h"
 #include "ui_fileinsightsubdialog.h"
 
