@@ -1,4 +1,5 @@
-// Header file for FileInsight
+// Header file for FileInsight: this declares variables, functions, modules to depend on,
+// etc.
 #ifndef FILEINSIGHT_H
 #define FILEINSIGHT_H
 
@@ -49,13 +50,9 @@ private slots:
     void on_selectFileButton_clicked();
     void on_actionSelect_triggered();
     void on_reloadButton_clicked();
-
     void on_tabWidget_tabCloseRequested(int index);
-
     void on_addTabButton_clicked();
-
     void on_actionAbout_triggered();
-
     void on_actionAbout_Qt_triggered();
 
 private:
