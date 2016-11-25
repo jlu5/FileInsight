@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     parser.setApplicationDescription("FileInsight is a GUI frontend for file type detection.");
     parser.addHelpOption();
+    parser.addVersionOption();
     parser.addPositionalArgument("files", QCoreApplication::translate("main",
                                  "Optional list of filenames to open."), "[filenames...]");
     parser.process(a);
