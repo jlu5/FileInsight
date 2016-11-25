@@ -103,8 +103,6 @@ QString FileInsight::getTridInfo(QString filename)
     // spaces or hyphens in it), so we use its interactive read-from-STDIN mode instead.
     this->trid_subprocess.start(this->trid_command, QStringList() << "-@");
     this->trid_subprocess.write(this->QStringToConstChar(filename));
-    // FIXME: sometimes this breaks (TrID says it can't find the file given).
-    // Could this be a race condition?
     this->trid_subprocess.waitForBytesWritten();
     this->trid_subprocess.closeWriteChannel();
 
@@ -162,12 +160,14 @@ QString FileInsight::getMimeType(QString filename)
 }
 
 const char * FileInsight::QStringToConstChar(QString text) {
-    /* Convert QString's to const char *, so that it can be used by libmagic, etc.
-     * Note: the QByteArray created by toUtf8() must be kept as a variable, or
-     * the pointer returned by constData() will be invalidated.
-     */
+    // Convert QStrings to const char *, so that it can be used by libmagic, etc.
+    // Source: http://doc.qt.io/qt-5/qbytearray.html#data
     QByteArray bytes = text.toUtf8();
-    return bytes.constData();
+    // Explicitly make a copy of the byte array data, so it can't be destroyed and
+    // and corrupt by garbage collection.
+    char *data = new char[bytes.size() + 1];
+    std::strcpy(data, bytes.constData());
+    return data;
 }
 
 int FileInsight::getBackend() {
