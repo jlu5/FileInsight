@@ -1,18 +1,18 @@
 # FileInsight
 
-FileInsight is a graphical file type identifier using libmagic (i.e. the Unix `file` command), Qt 5, and TrID as its backends. It is written in C++ and has been tested to work on both Windows and Linux.
+FileInsight is a Qt-based file type identifier using libmagic (i.e. the Unix `file` command), Qt 5, and TrID as its backends. It is written in C++ and has been tested to work on both Windows and Linux.
 
 ## Compilation / Installation
 
 ### Linux
 
-Linux installation is fairly straightforward, because the toolchain and dependencies can easily be fetched from most system repositories. For icon display, FileInsight will simply use the icon theme configured on your desktop.
+Linux installation is fairly straightforward. For icon display, FileInsight will simply use the icon theme configured on your desktop.
 
-1) Install Qt 5's development suite, Qt Creator, and libmagic with its development files. On a Debian / Ubuntu system, this corresponds to `apt-get install qt5-default libmagic-dev qtcreator`.
+1) Install Qt 5's development suite, Qt Creator, and libmagic's development files. On a Debian / Ubuntu system, this corresponds to `apt-get install qt5-default libmagic-dev qtcreator`.
 
-2) Compile the app with Qt Creator.
+2) Build the project with Qt Creator.
 
-3) Optionally, you can download TrID from http://mark0.net/soft-trid-e.html for the TrID backend. TrID is free for personal and non-commercial use, but is *NOT* under a FOSS license.
+3) Optionally, you can download and install TrID from http://mark0.net/soft-trid-e.html (the backend works by calling it as a subprocess). TrID is free for personal and non-commercial use, but is *NOT* free as in FOSS.
 
 ### Windows
 
@@ -51,7 +51,7 @@ Windows builds are a pain (no, really!). Instead, you may want to simply grab a 
 
 #### Making a Redistributable Build
 
-9) Copy the `windows-build-skeleton/` folder in FileInsight's source to somewhere else (this will be your "Windows build folder"). This folder includes the relevant copyright information that makes the build legally distributable.
+9) Copy the `windows-build-skeleton/` folder in FileInsight's source to somewhere else (this will be your "Windows build folder"). This folder includes the relevant copyright information that makes the build legally distributable (hopefully).
 
 10) Use [windeployqt](https://doc.qt.io/qt-5/windows-deployment.html) to copy the required Qt libraries to the Windows build folder: in a command line, run `windeploy PATH-TO-FILEINSIGHT.EXE`.
 
