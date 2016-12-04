@@ -5,6 +5,7 @@
 
 #include <magic.h>
 #include <iostream>
+#include <cstring>
 #include "constants.h"
 #include "fileinsightsubdialog.h"
 
