@@ -345,7 +345,7 @@ void FileInsight::on_actionAbout_triggered()
 {
     // This implements the About option in the File menu.
     QMessageBox::about(this, tr("About FileInsight"),
-                       tr("This is FileInsight %1 by J. Lu").arg(QCoreApplication::applicationVersion()));
+                       tr("This is FileInsight %1").arg(QCoreApplication::applicationVersion()));
 }
 
 void FileInsight::on_actionAbout_Qt_triggered()
