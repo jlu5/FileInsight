@@ -1,0 +1,21 @@
+Source: fileinsight
+Section: utils
+Priority: optional
+Maintainer: James Lu <bitflip3@gmail.com>
+Build-Depends: debhelper (>= 9),
+ qt5-qmake,
+ libmagic-dev,
+ qtbase5-dev,
+ qtbase5-dev-tools
+Standards-Version: 3.9.8
+Homepage: https://github.com/GLolol/fileinsight
+Vcs-Git: https://github.com/GLolol/fileinsight
+Vcs-Browser: https://github.com/GLolol/fileinsight/tree/debian
+
+Package: fileinsight
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: trid
+Description: Qt-based file type identification tool
+ FileInsight is a Qt-based file type identifier using libmagic (i.e. what powers
+ the Unix 'file' command), QMimeDatabase, and TrID as its backends.

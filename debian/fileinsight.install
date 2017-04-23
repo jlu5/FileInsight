@@ -1,0 +1,2 @@
+builddir/fileinsight usr/bin
+debian/fileinsight.desktop usr/share/applications

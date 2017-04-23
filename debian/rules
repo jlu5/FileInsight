@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+#export DH_VERBOSE = 1
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QMAKE_CFLAGS_RELEASE := $(CFLAGS)
+export QMAKE_CFLAGS_DEBUG := $(CFLAGS)
+export QMAKE_CXXFLAGS_RELEASE := $(CXXFLAGS)
+export QMAKE_CXXFLAGS_DEBUG := $(CXXFLAGS)
+export QMAKE_LFLAGS_RELEASE := $(LDFLAGS)
+export QMAKE_LFLAGS_DEBUG := $(LDFLAGS)
+export QT_SELECT := qt5
+
+%:
+	dh $@ --parallel --builddirectory=builddir
+
+override_dh_auto_configure:
+	mkdir -p builddir
+	dh_auto_configure --buildsystem=qmake -- $(CURDIR)/fileinsight.pro
+
+override_dh_auto_build:
+	dh_auto_build --builddirectory=builddir
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -fr fileinsight.pro.user builddir
