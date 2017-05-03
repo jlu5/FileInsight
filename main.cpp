@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QCommandLineParser>
 
+QString ICONNAME = "search";
+
 int main(int argc, char *argv[])
 {
     // Main function: create a Qt application using the command line arguments given
@@ -30,6 +32,10 @@ int main(int argc, char *argv[])
     for (int i=0; i<argcount; i++) {
         w.openFile(args[i], false);
     }
+
+    // Set an icon for the program. For now we're lazily using the "Search" icon of the
+    // current theme...
+    w.setWindowIcon(QIcon::fromTheme(ICONNAME));
 
     // Show the FileInsight window
     w.show();
