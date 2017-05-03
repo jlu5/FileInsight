@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>403</height>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,6 +33,12 @@
         </property>
         <item>
          <widget class="QPlainTextEdit" name="filenameOutput">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -83,7 +89,7 @@
       <item>
        <widget class="QPlainTextEdit" name="mimeOutput">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -91,7 +97,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>32</height>
+          <height>48</height>
          </size>
         </property>
         <property name="horizontalScrollBarPolicy">
