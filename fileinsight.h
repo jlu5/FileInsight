@@ -47,7 +47,7 @@ public:
     void openFile(QString filename, bool starting = true);
     const char * QStringToConstChar(QString text);
 
-private slots:
+protected slots:
     void on_actionQuit_triggered();
     void on_selectFileButton_clicked();
     void on_actionSelect_triggered();
@@ -60,6 +60,7 @@ private slots:
 private:
     Ui::FileInsight *ui;
 
+protected:
     QProcess trid_subprocess;
     QString trid_command;
     magic_t magic_cookie;

@@ -17,8 +17,6 @@ public:
     ~FileInsightSubdialog();
     Ui::FileInsightSubdialog *ui;
     QString filename;
-
-private:
 };
 
 #endif // FILEINSIGHTSUBDIALOG_H
