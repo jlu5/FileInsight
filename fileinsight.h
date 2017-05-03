@@ -6,7 +6,6 @@
 #include <magic.h>
 #include <iostream>
 #include <cstring>
-#include "constants.h"
 #include "fileinsightsubdialog.h"
 
 #include <QWidget>
@@ -24,6 +23,8 @@
 #include <QMimeData>
 #include <QList>
 
+enum FileInsightBackend { BACKEND_MAGIC, BACKEND_TRID, BACKEND_QT, BACKEND_QT_FILEONLY};
+
 namespace Ui {
 class FileInsight;
 }
@@ -36,7 +37,7 @@ public:
     explicit FileInsight(QWidget *parent = 0);
     ~FileInsight();
     void chooseFile();
-    int getBackend();
+    FileInsightBackend getBackend();
     FileInsightSubdialog * getCurrentTab();
     QIcon getIcon(QString mimetype);
     QString getMagicInfo(QString filename);

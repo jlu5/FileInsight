@@ -15,8 +15,7 @@ SOURCES += main.cpp\
     fileinsightsubdialog.cpp
 
 HEADERS  += fileinsight.h \
-    fileinsightsubdialog.h \
-    constants.h
+    fileinsightsubdialog.h
 
 FORMS    += fileinsight.ui \
     fileinsightsubdialog.ui

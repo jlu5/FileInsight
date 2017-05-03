@@ -1,7 +1,6 @@
 #ifndef FILEINSIGHTSUBDIALOG_H
 #define FILEINSIGHTSUBDIALOG_H
 
-#include "constants.h"
 #include <QWidget>
 #include <QIcon>
 

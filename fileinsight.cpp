@@ -131,7 +131,7 @@ QString FileInsight::getTridInfo(QString filename)
 QString FileInsight::getMimeType(QString filename)
 {
     QString mimetype;
-    int backend = this->getBackend();
+    FileInsightBackend backend = this->getBackend();
 
     /* Fetch the MIME type of the selected file, using either Qt 5 or libmagic,
      * depending on which one is selected. See https://en.wikipedia.org/wiki/Media_type#Naming
@@ -170,19 +170,18 @@ const char * FileInsight::QStringToConstChar(QString text) {
     return data;
 }
 
-int FileInsight::getBackend() {
+FileInsightBackend FileInsight::getBackend() {
     // Returns the backend currently in use. These integer values are
     // defined in constants.h.
-    if (ui->backend_magic->isChecked()) {
-        return BACKEND_MAGIC;
-    } else if (ui->backend_trid->isChecked()) {
+    if (ui->backend_trid->isChecked()) {
         return BACKEND_TRID;
     } else if (ui->backend_qt->isChecked()) {
         return BACKEND_QT;
     } else if (ui->backend_qt_fileonly->isChecked()) {
         return BACKEND_QT_FILEONLY;
     } else {
-        return -1;
+        // Use libmagic as default
+        return BACKEND_MAGIC;
     }
 }
 
@@ -219,7 +218,7 @@ void FileInsight::openFile(QString filename, bool overwrite)
     ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), stripped_filename);
 
     QString ext_info;
-    int backend = this->getBackend();
+    FileInsightBackend backend = this->getBackend();
 
     // Fill in extended info: use the TrID or libmagic backends (whichever is selected)
     if (backend == BACKEND_TRID)
