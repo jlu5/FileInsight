@@ -88,11 +88,25 @@ void FileInsight::chooseFile()
     }
 }
 
+// Display libmagic errors from the last call, if any. Also returns true if there was an error,
+// and false otherwise.
+bool FileInsight::getMagicError(magic_t magic_cookie)
+{
+    QString error_text = magic_error(magic_cookie);
+    if (!error_text.isEmpty()) {
+        QMessageBox::critical(this, tr("libmagic error"),
+                              tr("The libmagic backend encountered an error: ") + error_text);
+        return true;
+    }
+    return false;
+}
+
 QString FileInsight::getMagicInfo(QString filename)
 {
     // Tell libmagic to open the filename - it will return a string describing the file.
     QString magic_output = magic_file(this->magic_cookie, this->QStringToConstChar(filename));
     qDebug() << "Got libmagic output: " << magic_output;
+    getMagicError(this->magic_cookie);
     return magic_output;
 }
 
@@ -159,6 +173,7 @@ QString FileInsight::getMimeType(QString filename)
     } else {
         // libmagic MIME type backend
         mimetype = magic_file(this->magic_cookie_mime, this->QStringToConstChar(filename));
+        getMagicError(this->magic_cookie_mime);
     }
     return mimetype;
 }

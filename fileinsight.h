@@ -70,6 +70,8 @@ protected:
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+
+    bool getMagicError(magic_t magic_cookie);
 };
 
 #endif // FILEINSIGHT_H
