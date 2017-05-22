@@ -24,6 +24,11 @@
 #include <QList>
 #include <QDebug>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <QtWinExtras>
+#endif
+
 enum FileInsightBackend { BACKEND_MAGIC, BACKEND_TRID, BACKEND_QT, BACKEND_QT_FILEONLY};
 
 namespace Ui {
@@ -40,7 +45,7 @@ public:
     void chooseFile();
     FileInsightBackend getBackend();
     FileInsightSubdialog * getCurrentTab();
-    QIcon getIcon(QString mimetype);
+    QIcon getIcon(QString mimetype, QString filename);
     QString getMagicInfo(QString filename);
     QString getMimeType(QString filename);
     QString getTridInfo(QString filename);

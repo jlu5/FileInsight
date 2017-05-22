@@ -254,13 +254,13 @@ void FileInsight::openFile(QString filename, bool overwrite)
     QString mimetype = this->getMimeType(filename);
     currentTab->ui->mimeOutput->setPlainText(mimetype);
 
-    QIcon icon = this->getIcon(mimetype);
+    QIcon icon = this->getIcon(mimetype, filename);
 
     // TODO: consider scaling the icon display based on the window size
     currentTab->ui->iconDisplay->setPixmap(icon.pixmap(128,128));
 }
 
-QIcon FileInsight::getIcon(QString mimetype) {
+QIcon FileInsight::getIcon(QString mimetype, QString filename) {
     /* Fetch an icon based on the MIME type string given. This uses freedesktop.org
      * comptible icon themes, which are native to Linux but can be ported to Windows
      * by bundling a theme.
@@ -294,12 +294,27 @@ QIcon FileInsight::getIcon(QString mimetype) {
         /* Otherwise, fall back to the following in order:
          * 1) The icon for the generic type (e.g. a "video" icon for .mp4 files)
          * 2) The "unknown file type" icon in the icon theme used.
-         * 3) Qt's (small and out of place) generic file icon.
+         * 3) IF on Windows, the shell file type icon for the given file.
+         * 4) Qt's (small and out of place) generic file icon.
          */
         if (QIcon::hasThemeIcon(generic_type)) {
             icon = QIcon::fromTheme(generic_type);
         } else {
-            icon = QIcon::fromTheme("unknown", this->iconprovider.icon(QFileIconProvider::File));
+            #ifdef Q_OS_WIN
+                // Fetch the Windows icon using shell32.SHGetFileInfo:
+                // https://msdn.microsoft.com/en-us/library/windows/desktop/bb762179(v=vs.85).aspx
+                SHFILEINFOW shellfileinfo;
+                SHGetFileInfo((LPCTSTR) filename.utf16(),
+                              FILE_ATTRIBUTE_NORMAL, &shellfileinfo, sizeof(shellfileinfo),
+                              SHGFI_ICON | SHGFI_LARGEICON | SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES);
+                // Then, convert it into a QIcon.
+                QPixmap pixmap = QtWin::fromHICON(shellfileinfo.hIcon);
+                icon = QIcon(pixmap);
+            #endif
+
+            if (icon.isNull()) {
+                icon = QIcon::fromTheme("unknown", this->iconprovider.icon(QFileIconProvider::File));
+            }
         }
     }
     return icon;
