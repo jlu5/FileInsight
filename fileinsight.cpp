@@ -34,12 +34,15 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
     // libmagic flags go here (e.g. MAGIC_CHECK to verify that libmagic's data files are loaded)
     this->magic_cookie = magic_open(MAGIC_CHECK | MAGIC_COMPRESS);
 
+    qDebug() << "libmagic cookie: " << this->magic_cookie;
+
     // Tell libmagic to load the default file type definitions by passing NULL as filename argument
     magic_load(this->magic_cookie, NULL);
 
     // Repeat the above process for a second instance of libmagic, specifically used to find MIME
     // types. (set MAGIC_MIME_TYPE)
     this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
+    qDebug() << "libmagic cookie_mime: " << this->magic_cookie_mime;
     magic_load(this->magic_cookie_mime, NULL);
 
     // Initialize an empty new tab.
@@ -76,7 +79,7 @@ void FileInsight::chooseFile()
     // This implements file selection via Qt's built-in file dialog
     QString filename = QFileDialog::getOpenFileName(this, tr("Select File"), QString(),
             tr("All Files (*)"));
-    std::cout << "Selected file: " << filename.toStdString() << std::endl;
+    qDebug() << "Selected file: " << filename;
 
     if (!filename.isEmpty()) {
         // Open the file if one is selected: if the user clicks cancel on the file
@@ -89,6 +92,7 @@ QString FileInsight::getMagicInfo(QString filename)
 {
     // Tell libmagic to open the filename - it will return a string describing the file.
     QString magic_output = magic_file(this->magic_cookie, this->QStringToConstChar(filename));
+    qDebug() << "Got libmagic output: " << magic_output;
     return magic_output;
 }
 
@@ -167,6 +171,7 @@ const char * FileInsight::QStringToConstChar(QString text) {
     // and corrupt by garbage collection.
     char *data = new char[bytes.size() + 1];
     std::strcpy(data, bytes.constData());
+    qDebug() << "QStringToConstChar output: " << data;
     return data;
 }
 
@@ -264,8 +269,7 @@ QIcon FileInsight::getIcon(QString mimetype) {
         iconname.replace(slashlocation, 1, "-");
     }
 
-    std::cout << "Looking up icon for MIME type " << mimetype.toStdString() <<
-                 " (generic name: " << generic_type.toStdString() << ")" << std::endl;
+    qDebug() << "Looking up icon for MIME type " << mimetype << " (generic name: " << generic_type << ")";
 
     if (QIcon::hasThemeIcon(iconname)) {
         /* If the icon theme we're using has an icon for the MIME type we're looking for,
@@ -331,7 +335,7 @@ void FileInsight::on_tabWidget_tabCloseRequested(int index)
             ui->tabWidget->setTabsClosable(false);
         }
     } else {
-        std::cout << "Refusing to remove the last tab!" << std::endl;
+        qDebug() << "Refusing to remove the last tab!";
     }
 }
 

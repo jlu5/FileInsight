@@ -22,6 +22,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QList>
+#include <QDebug>
 
 enum FileInsightBackend { BACKEND_MAGIC, BACKEND_TRID, BACKEND_QT, BACKEND_QT_FILEONLY};
 
