@@ -256,8 +256,11 @@ void FileInsight::openFile(QString filename, bool overwrite)
 
     QIcon icon = this->getIcon(mimetype, filename);
 
-    // TODO: consider scaling the icon display based on the window size
-    currentTab->ui->iconDisplay->setPixmap(icon.pixmap(128,128));
+    // Display the icon based on the smaller of either 128x128 or the actual icon size
+    // TODO: consider scaling the icon size based on the window size as well
+    QSize iconSize = icon.actualSize(QSize(128, 128));
+    currentTab->ui->iconDisplay->setPixmap(icon.pixmap(iconSize));
+    currentTab->ui->iconDisplay->setMinimumSize(iconSize);
 }
 
 QIcon FileInsight::getIcon(QString mimetype, QString filename) {
@@ -303,6 +306,7 @@ QIcon FileInsight::getIcon(QString mimetype, QString filename) {
             #ifdef Q_OS_WIN
                 // Fetch the Windows icon using shell32.SHGetFileInfo:
                 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb762179(v=vs.85).aspx
+                // TODO: support the extra large icon sizes on Windows Vista and above.
                 SHFILEINFOW shellfileinfo;
                 SHGetFileInfo((LPCTSTR) filename.utf16(),
                               FILE_ATTRIBUTE_NORMAL, &shellfileinfo, sizeof(shellfileinfo),
