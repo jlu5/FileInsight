@@ -34,12 +34,15 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
     // libmagic flags go here (e.g. MAGIC_CHECK to verify that libmagic's data files are loaded)
     this->magic_cookie = magic_open(MAGIC_CHECK | MAGIC_COMPRESS);
 
+    qDebug() << "libmagic cookie: " << this->magic_cookie;
+
     // Tell libmagic to load the default file type definitions by passing NULL as filename argument
     magic_load(this->magic_cookie, NULL);
 
     // Repeat the above process for a second instance of libmagic, specifically used to find MIME
     // types. (set MAGIC_MIME_TYPE)
     this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
+    qDebug() << "libmagic cookie_mime: " << this->magic_cookie_mime;
     magic_load(this->magic_cookie_mime, NULL);
 
     // Initialize an empty new tab.
@@ -76,7 +79,7 @@ void FileInsight::chooseFile()
     // This implements file selection via Qt's built-in file dialog
     QString filename = QFileDialog::getOpenFileName(this, tr("Select File"), QString(),
             tr("All Files (*)"));
-    std::cout << "Selected file: " << filename.toStdString() << std::endl;
+    qDebug() << "Selected file: " << filename;
 
     if (!filename.isEmpty()) {
         // Open the file if one is selected: if the user clicks cancel on the file
@@ -85,10 +88,25 @@ void FileInsight::chooseFile()
     }
 }
 
+// Display libmagic errors from the last call, if any. Also returns true if there was an error,
+// and false otherwise.
+bool FileInsight::getMagicError(magic_t magic_cookie)
+{
+    QString error_text = magic_error(magic_cookie);
+    if (!error_text.isEmpty()) {
+        QMessageBox::critical(this, tr("libmagic error"),
+                              tr("The libmagic backend encountered an error: ") + error_text);
+        return true;
+    }
+    return false;
+}
+
 QString FileInsight::getMagicInfo(QString filename)
 {
     // Tell libmagic to open the filename - it will return a string describing the file.
     QString magic_output = magic_file(this->magic_cookie, this->QStringToConstChar(filename));
+    qDebug() << "Got libmagic output: " << magic_output;
+    getMagicError(this->magic_cookie);
     return magic_output;
 }
 
@@ -131,7 +149,7 @@ QString FileInsight::getTridInfo(QString filename)
 QString FileInsight::getMimeType(QString filename)
 {
     QString mimetype;
-    int backend = this->getBackend();
+    FileInsightBackend backend = this->getBackend();
 
     /* Fetch the MIME type of the selected file, using either Qt 5 or libmagic,
      * depending on which one is selected. See https://en.wikipedia.org/wiki/Media_type#Naming
@@ -155,6 +173,7 @@ QString FileInsight::getMimeType(QString filename)
     } else {
         // libmagic MIME type backend
         mimetype = magic_file(this->magic_cookie_mime, this->QStringToConstChar(filename));
+        getMagicError(this->magic_cookie_mime);
     }
     return mimetype;
 }
@@ -167,22 +186,22 @@ const char * FileInsight::QStringToConstChar(QString text) {
     // and corrupt by garbage collection.
     char *data = new char[bytes.size() + 1];
     std::strcpy(data, bytes.constData());
+    qDebug() << "QStringToConstChar output: " << data;
     return data;
 }
 
-int FileInsight::getBackend() {
+FileInsightBackend FileInsight::getBackend() {
     // Returns the backend currently in use. These integer values are
     // defined in constants.h.
-    if (ui->backend_magic->isChecked()) {
-        return BACKEND_MAGIC;
-    } else if (ui->backend_trid->isChecked()) {
+    if (ui->backend_trid->isChecked()) {
         return BACKEND_TRID;
     } else if (ui->backend_qt->isChecked()) {
         return BACKEND_QT;
     } else if (ui->backend_qt_fileonly->isChecked()) {
         return BACKEND_QT_FILEONLY;
     } else {
-        return -1;
+        // Use libmagic as default
+        return BACKEND_MAGIC;
     }
 }
 
@@ -219,7 +238,7 @@ void FileInsight::openFile(QString filename, bool overwrite)
     ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), stripped_filename);
 
     QString ext_info;
-    int backend = this->getBackend();
+    FileInsightBackend backend = this->getBackend();
 
     // Fill in extended info: use the TrID or libmagic backends (whichever is selected)
     if (backend == BACKEND_TRID)
@@ -235,13 +254,16 @@ void FileInsight::openFile(QString filename, bool overwrite)
     QString mimetype = this->getMimeType(filename);
     currentTab->ui->mimeOutput->setPlainText(mimetype);
 
-    QIcon icon = this->getIcon(mimetype);
+    QIcon icon = this->getIcon(mimetype, filename);
 
-    // TODO: consider scaling the icon display based on the window size
-    currentTab->ui->iconDisplay->setPixmap(icon.pixmap(128,128));
+    // Display the icon based on the smaller of either 128x128 or the actual icon size
+    // TODO: consider scaling the icon size based on the window size as well
+    QSize iconSize = icon.actualSize(QSize(128, 128));
+    currentTab->ui->iconDisplay->setPixmap(icon.pixmap(iconSize));
+    currentTab->ui->iconDisplay->setMinimumSize(iconSize);
 }
 
-QIcon FileInsight::getIcon(QString mimetype) {
+QIcon FileInsight::getIcon(QString mimetype, QString filename) {
     /* Fetch an icon based on the MIME type string given. This uses freedesktop.org
      * comptible icon themes, which are native to Linux but can be ported to Windows
      * by bundling a theme.
@@ -265,8 +287,7 @@ QIcon FileInsight::getIcon(QString mimetype) {
         iconname.replace(slashlocation, 1, "-");
     }
 
-    std::cout << "Looking up icon for MIME type " << mimetype.toStdString() <<
-                 " (generic name: " << generic_type.toStdString() << ")" << std::endl;
+    qDebug() << "Looking up icon for MIME type " << mimetype << " (generic name: " << generic_type << ")";
 
     if (QIcon::hasThemeIcon(iconname)) {
         /* If the icon theme we're using has an icon for the MIME type we're looking for,
@@ -276,12 +297,28 @@ QIcon FileInsight::getIcon(QString mimetype) {
         /* Otherwise, fall back to the following in order:
          * 1) The icon for the generic type (e.g. a "video" icon for .mp4 files)
          * 2) The "unknown file type" icon in the icon theme used.
-         * 3) Qt's (small and out of place) generic file icon.
+         * 3) IF on Windows, the shell file type icon for the given file.
+         * 4) Qt's (small and out of place) generic file icon.
          */
         if (QIcon::hasThemeIcon(generic_type)) {
             icon = QIcon::fromTheme(generic_type);
         } else {
-            icon = QIcon::fromTheme("unknown", this->iconprovider.icon(QFileIconProvider::File));
+            #ifdef Q_OS_WIN
+                // Fetch the Windows icon using shell32.SHGetFileInfo:
+                // https://msdn.microsoft.com/en-us/library/windows/desktop/bb762179(v=vs.85).aspx
+                // TODO: support the extra large icon sizes on Windows Vista and above.
+                SHFILEINFOW shellfileinfo;
+                SHGetFileInfo((LPCTSTR) filename.utf16(),
+                              FILE_ATTRIBUTE_NORMAL, &shellfileinfo, sizeof(shellfileinfo),
+                              SHGFI_ICON | SHGFI_LARGEICON | SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES);
+                // Then, convert it into a QIcon.
+                QPixmap pixmap = QtWin::fromHICON(shellfileinfo.hIcon);
+                icon = QIcon(pixmap);
+            #endif
+
+            if (icon.isNull()) {
+                icon = QIcon::fromTheme("unknown", this->iconprovider.icon(QFileIconProvider::File));
+            }
         }
     }
     return icon;
@@ -332,7 +369,7 @@ void FileInsight::on_tabWidget_tabCloseRequested(int index)
             ui->tabWidget->setTabsClosable(false);
         }
     } else {
-        std::cout << "Refusing to remove the last tab!" << std::endl;
+        qDebug() << "Refusing to remove the last tab!";
     }
 }
 

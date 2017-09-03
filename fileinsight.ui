@@ -39,7 +39,7 @@
          <item>
           <widget class="QRadioButton" name="backend_magic">
            <property name="text">
-            <string>libmagic</string>
+            <string>lib&amp;magic</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -52,7 +52,7 @@
             <string>Extended info only; better for binaries</string>
            </property>
            <property name="text">
-            <string>libmagic+TrID </string>
+            <string>libmagic+&amp;TrID </string>
            </property>
           </widget>
          </item>
@@ -62,15 +62,15 @@
             <string>MIME Type only</string>
            </property>
            <property name="text">
-            <string>Qt5</string>
+            <string>&amp;QMimeDatabase</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QRadioButton" name="backend_qt_fileonly">
            <property name="text">
-            <string>Qt5 (check
-data only)</string>
+            <string>QMimeDatabase
+(parse &amp;data only)</string>
            </property>
           </widget>
          </item>
@@ -86,21 +86,21 @@ data only)</string>
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Select File</string>
+         <string>Select File (&amp;O)</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="reloadButton">
         <property name="text">
-         <string>Reload</string>
+         <string>&amp;Reload</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="addTabButton">
         <property name="text">
-         <string>New Tab</string>
+         <string>&amp;New Tab</string>
         </property>
        </widget>
       </item>
@@ -114,19 +114,19 @@ data only)</string>
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>21</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionSelect"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>

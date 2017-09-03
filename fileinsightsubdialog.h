@@ -1,7 +1,6 @@
 #ifndef FILEINSIGHTSUBDIALOG_H
 #define FILEINSIGHTSUBDIALOG_H
 
-#include "constants.h"
 #include <QWidget>
 #include <QIcon>
 
@@ -18,8 +17,6 @@ public:
     ~FileInsightSubdialog();
     Ui::FileInsightSubdialog *ui;
     QString filename;
-
-private:
 };
 
 #endif // FILEINSIGHTSUBDIALOG_H

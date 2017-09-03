@@ -15,8 +15,7 @@ SOURCES += main.cpp\
     fileinsightsubdialog.cpp
 
 HEADERS  += fileinsight.h \
-    fileinsightsubdialog.h \
-    constants.h
+    fileinsightsubdialog.h
 
 FORMS    += fileinsight.ui \
     fileinsightsubdialog.ui
@@ -25,6 +24,7 @@ FORMS    += fileinsight.ui \
 win32:INCLUDEPATH += $$PWD\thirdparty\include
 win32:LIBPATH += $$PWD\thirdparty\bin
 win32:LIBPATH += $$PWD\thirdparty\lib
+win32:QT += winextras
 
 # Link to libmagic for file type detection
 LIBS += -lmagic

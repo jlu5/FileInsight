@@ -6,7 +6,6 @@
 #include <magic.h>
 #include <iostream>
 #include <cstring>
-#include "constants.h"
 #include "fileinsightsubdialog.h"
 
 #include <QWidget>
@@ -23,6 +22,14 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QList>
+#include <QDebug>
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <QtWinExtras>
+#endif
+
+enum FileInsightBackend { BACKEND_MAGIC, BACKEND_TRID, BACKEND_QT, BACKEND_QT_FILEONLY};
 
 namespace Ui {
 class FileInsight;
@@ -36,9 +43,9 @@ public:
     explicit FileInsight(QWidget *parent = 0);
     ~FileInsight();
     void chooseFile();
-    int getBackend();
+    FileInsightBackend getBackend();
     FileInsightSubdialog * getCurrentTab();
-    QIcon getIcon(QString mimetype);
+    QIcon getIcon(QString mimetype, QString filename);
     QString getMagicInfo(QString filename);
     QString getMimeType(QString filename);
     QString getTridInfo(QString filename);
@@ -46,7 +53,7 @@ public:
     void openFile(QString filename, bool starting = true);
     const char * QStringToConstChar(QString text);
 
-private slots:
+protected slots:
     void on_actionQuit_triggered();
     void on_selectFileButton_clicked();
     void on_actionSelect_triggered();
@@ -59,6 +66,7 @@ private slots:
 private:
     Ui::FileInsight *ui;
 
+protected:
     QProcess trid_subprocess;
     QString trid_command;
     magic_t magic_cookie;
@@ -67,6 +75,8 @@ private:
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+
+    bool getMagicError(magic_t magic_cookie);
 };
 
 #endif // FILEINSIGHT_H
