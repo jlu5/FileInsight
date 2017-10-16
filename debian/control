@@ -7,7 +7,7 @@ Build-Depends: debhelper (>= 9),
  libmagic-dev,
  qtbase5-dev,
  qtbase5-dev-tools
-Standards-Version: 4.1.0
+Standards-Version: 4.1.1
 Homepage: https://github.com/GLolol/fileinsight
 Vcs-Git: https://github.com/GLolol/fileinsight
 Vcs-Browser: https://github.com/GLolol/fileinsight/tree/debian

@@ -1,9 +1,8 @@
 fileinsight (0.3.1-0utopia1) UNRELEASED; urgency=medium
 
   * New release.
-  * Bump Standards Version to 4.1.0, no changes needed.
-  * Remove debian/fileinsight.desktop and install the one included upstream
-    instead.
+  * Bump Standards Version to 4.1.1, no changes needed.
+  * Remove debian/fileinsight.desktop, now provided upstream.
 
  -- James Lu <bitflip3@gmail.com>  Sat, 02 Sep 2017 17:52:07 -0700
 
