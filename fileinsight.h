@@ -37,16 +37,11 @@ class FileInsight : public QMainWindow
 public:
     explicit FileInsight(QWidget *parent = nullptr);
     ~FileInsight();
+
     void chooseFile();
-    FileInsightBackend* getBackend() const;
-    FileInsightSubdialog* getCurrentTab();
     QIcon getIcon(QString mimetype, QString filename);
-    QString getMagicInfo(QString filename);
-    QString getMimeType(QString filename);
-    QString getTridInfo(QString filename);
-    FileInsightSubdialog* newTab(bool starting = false);
     void openFile(QString filename, bool starting = true);
-    const char * QStringToConstChar(QString text);
+    FileInsightBackend* getBackend() const;
 
 protected slots:
     void on_actionQuit_triggered();
@@ -58,16 +53,19 @@ protected slots:
     void on_actionAbout_triggered();
     void on_actionAbout_Qt_triggered();
 
+    FileInsightSubdialog* getCurrentTab();
+    FileInsightSubdialog* newTab(bool starting = false);
+
 private:
     Ui::FileInsight *ui;
     QFileIconProvider iconprovider;
 
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-
     FileInsightBackend* magicbackend;
     FileInsightBackend* tridbackend;
     FileInsightBackend* qmimebackend;
+
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 };
 
 #endif // FILEINSIGHT_H
