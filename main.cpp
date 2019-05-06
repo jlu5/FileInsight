@@ -13,19 +13,18 @@ int main(int argc, char *argv[])
 
     // Handle command line arguments such as --help and an optional filename list
     QCommandLineParser parser;
-    parser.setApplicationDescription("FileInsight is a GUI frontend for file type detection.");
+    parser.setApplicationDescription(QCoreApplication::translate("main", "FileInsight is a file type analyzer using libmagic and TrID as backends."));
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addPositionalArgument("files", QCoreApplication::translate("main",
+    parser.addPositionalArgument(QCoreApplication::translate("main", "files"), QCoreApplication::translate("main",
                                  "Optional list of filenames to open."), "[filenames...]");
     parser.process(a);
 
     FileInsight w;
     QStringList args = parser.positionalArguments();
-    int argcount = args.count();
 
     // If we're given filenames on the command line, open and spawn a new tab for each.
-    for (int i=0; i<argcount; i++) {
+    for (int i=0; i < args.count(); i++) {
         w.openFile(args[i], false);
     }
 
