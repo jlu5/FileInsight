@@ -13,7 +13,6 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QFileDialog>
-#include <QFileIconProvider>
 #include <QList>
 #include <QMainWindow>
 #include <QMessageBox>
@@ -39,7 +38,6 @@ public:
     ~FileInsight();
 
     void chooseFile();
-    QIcon getIcon(QString mimetype, QString filename);
     void openFile(QString filename, bool starting = true);
     FileInsightBackend* getBackend() const;
 
@@ -58,7 +56,6 @@ protected slots:
 
 private:
     Ui::FileInsight *ui;
-    QFileIconProvider iconprovider;
 
     FileInsightBackend* magicbackend;
     FileInsightBackend* tridbackend;
