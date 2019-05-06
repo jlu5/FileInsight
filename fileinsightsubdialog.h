@@ -13,7 +13,7 @@ class FileInsightSubdialog : public QWidget
     Q_OBJECT
 
 public:
-    explicit FileInsightSubdialog(QWidget *parent = 0);
+    explicit FileInsightSubdialog(QWidget *parent = nullptr);
     ~FileInsightSubdialog();
     Ui::FileInsightSubdialog *ui;
     QString filename;

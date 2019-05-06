@@ -12,10 +12,20 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         fileinsight.cpp \
-    fileinsightsubdialog.cpp
+    fileinsightsubdialog.cpp \
+    fileinsightbackend.cpp \
+    libmagicbackend.cpp \
+    fileinsightutils.cpp \
+    tridbackend.cpp \
+    qmimedatabasebackend.cpp
 
 HEADERS  += fileinsight.h \
-    fileinsightsubdialog.h
+    fileinsightsubdialog.h \
+    fileinsightbackend.h \
+    libmagicbackend.h \
+    fileinsightutils.h \
+    tridbackend.h \
+    qmimedatabasebackend.h
 
 FORMS    += fileinsight.ui \
     fileinsightsubdialog.ui

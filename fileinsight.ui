@@ -66,14 +66,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QRadioButton" name="backend_qt_fileonly">
-           <property name="text">
-            <string>QMimeDatabase
-(parse &amp;data only)</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
@@ -114,7 +106,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>28</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

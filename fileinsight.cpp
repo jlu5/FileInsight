@@ -11,35 +11,14 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
     setAcceptDrops(true);
 
 #ifdef Q_OS_WIN
-    // On Windows, use an absolute path for TrID (in our thirdparty/ folder)
-    QString appdir = QCoreApplication::applicationDirPath();
-    this->trid_command = appdir + "/thirdparty/trid";
-
-    // Set the path and name of our bundled icon theme
+    // On Windows, set the path and name of our bundled icon theme
     QIcon::setThemeName("oxygen");
     QIcon::setThemeSearchPaths(QStringList() << appdir + "/icons");
-#else
-    // Otherwise, just look for TrID in the path.
-    this->trid_command = "trid";
 #endif
 
-    /* Initialize libmagic by fetching ourselves special cookies from magic_open() - this is
-     * similar to fetching a specific instance of a class. Libmagic's API is documented here:
-     * https://linux.die.net/man/3/libmagic
-     */
-    // libmagic flags go here (e.g. MAGIC_CHECK to verify that libmagic's data files are loaded)
-    this->magic_cookie = magic_open(MAGIC_CHECK | MAGIC_COMPRESS);
-
-    qDebug() << "libmagic cookie: " << this->magic_cookie;
-
-    // Tell libmagic to load the default file type definition
-    magic_load(this->magic_cookie, nullptr);
-
-    // Repeat the above process for a second instance of libmagic, specifically used to find MIME
-    // types. (set MAGIC_MIME_TYPE)
-    this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
-    qDebug() << "libmagic cookie_mime: " << this->magic_cookie_mime;
-    magic_load(this->magic_cookie_mime, nullptr);
+    magicbackend = new LibmagicBackend(this);
+    tridbackend = new TrIDBackend(this);
+    qmimebackend = new QMimeDatabaseBackend(this);
 
     // Initialize an empty new tab.
     this->newTab(true);
@@ -78,119 +57,15 @@ void FileInsight::chooseFile()
     }
 }
 
-// Display libmagic errors from the last call, if any. Returns true if there was an error,
-// and false otherwise.
-bool FileInsight::getMagicError(magic_t magic_cookie)
-{
-    QString error_text = magic_error(magic_cookie);
-    if (!error_text.isEmpty()) {
-        QMessageBox::critical(this, tr("libmagic error"),
-                              tr("The libmagic backend encountered an error: ") + error_text);
-        return true;
-    }
-    return false;
-}
-
-// Gets file type output from libmagic
-QString FileInsight::getMagicInfo(QString filename)
-{
-    QString magic_output = magic_file(this->magic_cookie, this->QStringToConstChar(filename));
-    qDebug() << "Got libmagic output: " << magic_output;
-    getMagicError(this->magic_cookie);
-    return magic_output;
-}
-
-
-// Gets extended file info using the TrID command line program, by running it in a subprocess.
-QString FileInsight::getTridInfo(QString filename)
-{
-    QString data;
-
-    // TrID's command line argument handling isn't great (it breaks on filenames with
-    // spaces or hyphens in it), so we use its interactive read-from-STDIN mode instead.
-    this->trid_subprocess.start(this->trid_command, QStringList() << "-@");
-    this->trid_subprocess.write(this->QStringToConstChar(filename));
-    this->trid_subprocess.waitForBytesWritten();
-    this->trid_subprocess.closeWriteChannel();
-
-    QByteArray result;
-    // Grab all of the subprocess' text output using a loop.
-    while (this->trid_subprocess.waitForReadyRead())
-    {
-        result += this->trid_subprocess.readAll();
-    }
-    data = result.data();
-    // Trim any leading or trailing whitespace.
-    data = data.trimmed();
-
-    if (data.isEmpty())
-    {
-        // The TrID process failed to start or otherwise returned no data.
-        // Raise an error.
-        QMessageBox::critical(this, tr("Failed to start TrID"),
-                             tr("An error occurred while retrieving data from the TrID backend. "
-                                "Check that TrID is installed and in your PATH!"));
-    }
-
-    return data;
-}
-
-/* Fetch the MIME type of the selected file, using either Qt 5 or libmagic,
- * depending on which one is selected. See https://en.wikipedia.org/wiki/Media_type#Naming
- * for the relevant format.
- */
-QString FileInsight::getMimeType(QString filename)
-{
-    QString mimetype;
-    FileInsightBackend backend = this->getBackend();
-
-    if (backend == BACKEND_QT || backend == BACKEND_QT_FILEONLY) {
-        // Qt5 / QMimeDatabase backend
-        QMimeDatabase mimedb;
-
-        QMimeType mimeobj;
-
-        // If we're using the option to look at data only, pass that on to
-        // mimeTypeForFile()
-        if (backend == BACKEND_QT_FILEONLY)
-        {
-            mimeobj = mimedb.mimeTypeForFile(filename, QMimeDatabase::MatchContent);
-        } else {
-            mimeobj = mimedb.mimeTypeForFile(filename);
-        }
-        mimetype = mimeobj.name();
-    } else {
-        // libmagic MIME type backend
-        mimetype = magic_file(this->magic_cookie_mime, this->QStringToConstChar(filename));
-        getMagicError(this->magic_cookie_mime);
-    }
-    return mimetype;
-}
-
-const char * FileInsight::QStringToConstChar(QString text) {
-    // Convert QStrings to const char *, so that it can be used by libmagic, etc.
-    // Source: http://doc.qt.io/qt-5/qbytearray.html#data
-    QByteArray bytes = text.toUtf8();
-    // Explicitly make a copy of the byte array data, so it can't be destroyed and
-    // and corrupt by garbage collection.
-    char *data = new char[bytes.size() + 1];
-    std::strcpy(data, bytes.constData());
-    qDebug() << "QStringToConstChar output: " << data;
-    return data;
-}
-
-FileInsightBackend FileInsight::getBackend() {
-    // Returns the backend currently in use. These integer values are
-    // defined in constants.h.
+// Returns a pointer to the currently selected backend
+FileInsightBackend* FileInsight::getBackend() const {
     if (ui->backend_trid->isChecked()) {
-        return BACKEND_TRID;
+        return tridbackend;
     } else if (ui->backend_qt->isChecked()) {
-        return BACKEND_QT;
-    } else if (ui->backend_qt_fileonly->isChecked()) {
-        return BACKEND_QT_FILEONLY;
+        return qmimebackend;
     } else {
         // Use libmagic as default
-        return BACKEND_MAGIC;
+        return magicbackend;
     }
 }
 
@@ -222,20 +97,13 @@ void FileInsight::openFile(QString filename, bool overwrite)
     QString stripped_filename = fi.fileName();
     ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), stripped_filename);
 
-    QString ext_info;
-    FileInsightBackend backend = this->getBackend();
-
-    // Fill in extended info: use the TrID or libmagic backends (whichever is selected)
-    if (backend == BACKEND_TRID)
-    {
-        ext_info = this->getTridInfo(filename);
-    } else if (backend == BACKEND_MAGIC) {
-        ext_info = this->getMagicInfo(filename);
-    }
+    // Get descriptive info from our backend
+    FileInsightBackend* backend = this->getBackend();
+    QString ext_info = backend->getExtendedInfo(filename);
     currentTab->ui->output->setPlainText(ext_info);
 
     // Get the MIME type and use it to fetch the icon
-    QString mimetype = this->getMimeType(filename);
+    QString mimetype = backend->getMimeType(filename);
     currentTab->ui->mimeOutput->setPlainText(mimetype);
 
     QIcon icon = this->getIcon(mimetype, filename);

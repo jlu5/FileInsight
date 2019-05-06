@@ -3,33 +3,28 @@
 #ifndef FILEINSIGHT_H
 #define FILEINSIGHT_H
 
-#include <magic.h>
-#include <iostream>
-#include <cstring>
+#include "fileinsightbackend.h"
 #include "fileinsightsubdialog.h"
+#include "libmagicbackend.h"
+#include "tridbackend.h"
+#include "qmimedatabasebackend.h"
 
-#include <QWidget>
-#include <QMainWindow>
-#include <QFileDialog>
-#include <QByteArray>
-#include <QFileIconProvider>
-#include <QProcess>
-#include <QMimeDatabase>
-#include <QMessageBox>
-#include <QProcessEnvironment>
+#include <QDebug>
 #include <QDragEnterEvent>
 #include <QDropEvent>
-#include <QUrl>
-#include <QMimeData>
+#include <QFileDialog>
+#include <QFileIconProvider>
 #include <QList>
-#include <QDebug>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QUrl>
+#include <QWidget>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <QtWinExtras>
 #endif
-
-enum FileInsightBackend { BACKEND_MAGIC, BACKEND_TRID, BACKEND_QT, BACKEND_QT_FILEONLY};
 
 namespace Ui {
 class FileInsight;
@@ -40,16 +35,16 @@ class FileInsight : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit FileInsight(QWidget *parent = 0);
+    explicit FileInsight(QWidget *parent = nullptr);
     ~FileInsight();
     void chooseFile();
-    FileInsightBackend getBackend();
-    FileInsightSubdialog * getCurrentTab();
+    FileInsightBackend* getBackend() const;
+    FileInsightSubdialog* getCurrentTab();
     QIcon getIcon(QString mimetype, QString filename);
     QString getMagicInfo(QString filename);
     QString getMimeType(QString filename);
     QString getTridInfo(QString filename);
-    FileInsightSubdialog * newTab(bool starting = false);
+    FileInsightSubdialog* newTab(bool starting = false);
     void openFile(QString filename, bool starting = true);
     const char * QStringToConstChar(QString text);
 
@@ -65,18 +60,14 @@ protected slots:
 
 private:
     Ui::FileInsight *ui;
-
-protected:
-    QProcess trid_subprocess;
-    QString trid_command;
-    magic_t magic_cookie;
-    magic_t magic_cookie_mime;
     QFileIconProvider iconprovider;
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 
-    bool getMagicError(magic_t magic_cookie);
+    FileInsightBackend* magicbackend;
+    FileInsightBackend* tridbackend;
+    FileInsightBackend* qmimebackend;
 };
 
 #endif // FILEINSIGHT_H
