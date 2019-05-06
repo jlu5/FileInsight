@@ -3,14 +3,11 @@
 #include <QApplication>
 #include <QCommandLineParser>
 
-QString ICONNAME = "search";
+static QString ICON_NAME = "search";
 
 int main(int argc, char *argv[])
 {
-    // Main function: create a Qt application using the command line arguments given
     QApplication a(argc, argv);
-
-    // Set the version and program name.
     QCoreApplication::setApplicationName("FileInsight");
     QCoreApplication::setApplicationVersion("0.3.1");
 
@@ -23,7 +20,6 @@ int main(int argc, char *argv[])
                                  "Optional list of filenames to open."), "[filenames...]");
     parser.process(a);
 
-    // Create an instance of the FileInsight window
     FileInsight w;
     QStringList args = parser.positionalArguments();
     int argcount = args.count();
@@ -35,10 +31,7 @@ int main(int argc, char *argv[])
 
     // Set an icon for the program. For now we're lazily using the "Search" icon of the
     // current theme...
-    w.setWindowIcon(QIcon::fromTheme(ICONNAME));
-
-    // Show the FileInsight window
+    w.setWindowIcon(QIcon::fromTheme(ICON_NAME));
     w.show();
-
-    return a.exec(); // Run the Qt app and exit with its return code when finished
+    return a.exec();
 }

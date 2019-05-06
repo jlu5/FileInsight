@@ -7,15 +7,11 @@
 // Main window class: this is derived from QMainWindow but implements custom routines
 // so the program is useful.
 FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::FileInsight) {
-    // Set up the UI by creating an instance of our UI class and initializing it
     ui->setupUi(this);
-
-    // Enable drag and drop
     setAcceptDrops(true);
 
 #ifdef Q_OS_WIN
-    // On Windows, use an absolute path for TrID (in our thirdparty/ folder), so that
-    // the program can be found.
+    // On Windows, use an absolute path for TrID (in our thirdparty/ folder)
     QString appdir = QCoreApplication::applicationDirPath();
     this->trid_command = appdir + "/thirdparty/trid";
 
@@ -36,7 +32,7 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
 
     qDebug() << "libmagic cookie: " << this->magic_cookie;
 
-    // Tell libmagic to load the default file type definitions by passing NULL as filename argument
+    // Tell libmagic to load the default file type definition
     magic_load(this->magic_cookie, NULL);
 
     // Repeat the above process for a second instance of libmagic, specifically used to find MIME
@@ -51,19 +47,13 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
 
 FileInsightSubdialog * FileInsight::newTab(bool starting)
 {
-    // Add the new tab.
     int newIndex = ui->tabWidget->addTab(new FileInsightSubdialog(this), tr("New Tab"));
-
-    // Set the focus to the new tab as it is created.
     ui->tabWidget->setCurrentIndex(newIndex);
 
     if (!starting) {
         // If closing tabs was disabled, enable it again.
         ui->tabWidget->setTabsClosable(true);
     }
-
-    // Return the newly created widget/tab, and explicitly cast it to the
-    // FileInsightSubdialog type so we can access its UI elements.
     return (FileInsightSubdialog *) ui->tabWidget->widget(newIndex);
 }
 
@@ -88,7 +78,7 @@ void FileInsight::chooseFile()
     }
 }
 
-// Display libmagic errors from the last call, if any. Also returns true if there was an error,
+// Display libmagic errors from the last call, if any. Returns true if there was an error,
 // and false otherwise.
 bool FileInsight::getMagicError(magic_t magic_cookie)
 {
@@ -101,9 +91,9 @@ bool FileInsight::getMagicError(magic_t magic_cookie)
     return false;
 }
 
+// Gets file type output from libmagic
 QString FileInsight::getMagicInfo(QString filename)
 {
-    // Tell libmagic to open the filename - it will return a string describing the file.
     QString magic_output = magic_file(this->magic_cookie, this->QStringToConstChar(filename));
     qDebug() << "Got libmagic output: " << magic_output;
     getMagicError(this->magic_cookie);
@@ -111,10 +101,9 @@ QString FileInsight::getMagicInfo(QString filename)
 }
 
 
+// Gets extended file info using the TrID command line program, by running it in a subprocess.
 QString FileInsight::getTridInfo(QString filename)
 {
-    // This method gets extended file info using the TrID command line program,
-    // by running it in a subprocess.
     QString data;
 
     // TrID's command line argument handling isn't great (it breaks on filenames with
@@ -146,15 +135,15 @@ QString FileInsight::getTridInfo(QString filename)
     return data;
 }
 
+/* Fetch the MIME type of the selected file, using either Qt 5 or libmagic,
+ * depending on which one is selected. See https://en.wikipedia.org/wiki/Media_type#Naming
+ * for the relevant format.
+ */
 QString FileInsight::getMimeType(QString filename)
 {
     QString mimetype;
     FileInsightBackend backend = this->getBackend();
 
-    /* Fetch the MIME type of the selected file, using either Qt 5 or libmagic,
-     * depending on which one is selected. See https://en.wikipedia.org/wiki/Media_type#Naming
-     * for the relevant format.
-     */
     if (backend == BACKEND_QT || backend == BACKEND_QT_FILEONLY) {
         // Qt5 / QMimeDatabase backend
         QMimeDatabase mimedb;
@@ -220,12 +209,8 @@ void FileInsight::openFile(QString filename, bool overwrite)
         currentTab = this->newTab();
     }
     currentTab->ui->filenameOutput->setPlainText(filename);
-
-    // Save the filename in the tab object, so we know whether it has a file attached
-    // in the future.
     currentTab->filename = filename;
 
-    // Check to make sure the file that was given exists
     QFileInfo fi(filename);
     if (!fi.exists()) {
         QMessageBox::critical(this, tr("Error reading file"), "Can't find \"" + filename + "\"");
@@ -247,7 +232,6 @@ void FileInsight::openFile(QString filename, bool overwrite)
     } else if (backend == BACKEND_MAGIC) {
         ext_info = this->getMagicInfo(filename);
     }
-    // Write the extended output into the text box in the tab.
     currentTab->ui->output->setPlainText(ext_info);
 
     // Get the MIME type and use it to fetch the icon
@@ -324,13 +308,9 @@ QIcon FileInsight::getIcon(QString mimetype, QString filename) {
     return icon;
 }
 
-// These implement slots (event handlers), such as the Quit menu option, select file
-// button, etc.
-
+// Implement the Quit action in the File menu.
 void FileInsight::on_actionQuit_triggered()
 {
-    // Implement the Quit action in the File menu. This calls quit() on the global "qApp"
-    // pointer, which refers to the current running QApplication instance
     qApp->quit();
 }
 
@@ -344,9 +324,9 @@ void FileInsight::on_actionSelect_triggered()
     this->chooseFile();
 }
 
+// Reload the file in the current tab, if one has been selected.
 void FileInsight::on_reloadButton_clicked()
 {
-    // Reload the file in the current tab, if one has been selected.
     FileInsightSubdialog *currentTab = this->getCurrentTab();
     if (!currentTab->filename.isEmpty()) {
         this->openFile(currentTab->filename);
@@ -355,10 +335,9 @@ void FileInsight::on_reloadButton_clicked()
     }
 }
 
+// This implements the close button on the tab widget, when multiple are open
 void FileInsight::on_tabWidget_tabCloseRequested(int index)
 {
-    // This implements the close button on the tab widget, when multiple
-    // tabs are open.
     int count = ui->tabWidget->count();
     if (count >= 2) {
         ui->tabWidget->removeTab(index);
@@ -378,34 +357,30 @@ void FileInsight::on_addTabButton_clicked()
     this->newTab();
 }
 
+// This implements the About option in the File menu.
 void FileInsight::on_actionAbout_triggered()
 {
-    // This implements the About option in the File menu.
     QMessageBox::about(this, tr("About FileInsight"),
                        tr("This is FileInsight %1").arg(QCoreApplication::applicationVersion()));
 }
 
+// This implements the About Qt option in the File menu.
 void FileInsight::on_actionAbout_Qt_triggered()
 {
-    // "About Qt" is implemented in the framework itself; we just have to call it
-    // within our program.
     QMessageBox::aboutQt(this);
 }
 
+// Handle attempts to drag & drop URLs into the window
 void FileInsight::dragEnterEvent(QDragEnterEvent *event)
 {
-    // Handle attempts to drag & drop things into the window: only let it succeed if we're
-    // given URLs (in this case, paths to files we can open).
     if (event->mimeData()->hasUrls()) {
         event->acceptProposedAction();
     }
 }
 
+// Drop handler: it takes the file paths given and process each one individually.
 void FileInsight::dropEvent(QDropEvent *event)
 {
-    // Drop handler: it takes the file paths given and process each one individually.
-
-    // Partly based off https://wiki.qt.io/Drag_and_Drop_of_files
     QUrl url;
     QString localUrl;
     foreach (url, event->mimeData()->urls()) {
