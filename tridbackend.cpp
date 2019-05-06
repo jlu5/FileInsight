@@ -20,7 +20,9 @@ QString TrIDBackend::getExtendedInfo(QString filename)
     // TrID's command line argument handling isn't great (it breaks on filenames with
     // spaces or hyphens in it), so we use its interactive read-from-STDIN mode instead.
     this->trid_subprocess.start(this->trid_command, QStringList() << "-@");
-    this->trid_subprocess.write(FileInsightUtils::QStringToConstChar(filename));
+    const char* filenamebuf = FileInsightUtils::QStringToConstChar(filename);
+    this->trid_subprocess.write(filenamebuf);
+    delete filenamebuf;
     this->trid_subprocess.waitForBytesWritten();
     this->trid_subprocess.closeWriteChannel();
 

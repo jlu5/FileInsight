@@ -14,7 +14,6 @@ LibmagicBackend::LibmagicBackend(QWidget* parent) : FileInsightBackend(parent)
     // Tell libmagic to load the default file type definition
     magic_load(this->magic_cookie, nullptr);
 
-
     // Repeat the above process for a second instance of libmagic, specifically used to find MIME
     // types. (set MAGIC_MIME_TYPE)
     this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
@@ -37,16 +36,20 @@ bool LibmagicBackend::getError(magic_t magic_cookie)
 }
 
 QString LibmagicBackend::getMimeType(QString filename) {
-    QString mimetype = magic_file(this->magic_cookie_mime, FileInsightUtils::QStringToConstChar(filename));
+    const char* buf = FileInsightUtils::QStringToConstChar(filename);
+    QString mimetype = magic_file(this->magic_cookie_mime, buf);
     getError(this->magic_cookie_mime);
+    delete buf;
     return mimetype;
 }
 
 // Gets file type output from libmagic
 QString LibmagicBackend::getExtendedInfo(QString filename)
 {
-    QString magic_output = magic_file(this->magic_cookie, FileInsightUtils::QStringToConstChar(filename));
+    const char* buf = FileInsightUtils::QStringToConstChar(filename);
+    QString magic_output = magic_file(this->magic_cookie, buf);
     qDebug() << "Got libmagic output: " << magic_output;
     getError(this->magic_cookie);
+    delete buf;
     return magic_output;
 }
