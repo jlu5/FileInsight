@@ -33,13 +33,13 @@ FileInsight::FileInsight(QWidget *parent) : QMainWindow(parent), ui(new Ui::File
     qDebug() << "libmagic cookie: " << this->magic_cookie;
 
     // Tell libmagic to load the default file type definition
-    magic_load(this->magic_cookie, NULL);
+    magic_load(this->magic_cookie, nullptr);
 
     // Repeat the above process for a second instance of libmagic, specifically used to find MIME
     // types. (set MAGIC_MIME_TYPE)
     this->magic_cookie_mime = magic_open(MAGIC_CHECK | MAGIC_MIME_TYPE);
     qDebug() << "libmagic cookie_mime: " << this->magic_cookie_mime;
-    magic_load(this->magic_cookie_mime, NULL);
+    magic_load(this->magic_cookie_mime, nullptr);
 
     // Initialize an empty new tab.
     this->newTab(true);
@@ -54,7 +54,7 @@ FileInsightSubdialog * FileInsight::newTab(bool starting)
         // If closing tabs was disabled, enable it again.
         ui->tabWidget->setTabsClosable(true);
     }
-    return (FileInsightSubdialog *) ui->tabWidget->widget(newIndex);
+    return static_cast<FileInsightSubdialog *>(ui->tabWidget->widget(newIndex));
 }
 
 // Destructor for the FileInsight class:
@@ -196,7 +196,7 @@ FileInsightBackend FileInsight::getBackend() {
 
 FileInsightSubdialog* FileInsight::getCurrentTab() {
     // Return the current tab, explicitly casted to the FileInsightSubDialog type.
-    return (FileInsightSubdialog *) ui->tabWidget->currentWidget();
+    return static_cast<FileInsightSubdialog *>(ui->tabWidget->currentWidget());
 }
 
 void FileInsight::openFile(QString filename, bool overwrite)
