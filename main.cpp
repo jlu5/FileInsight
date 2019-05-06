@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName("FileInsight");
-    QCoreApplication::setApplicationVersion("0.3.1");
+    QCoreApplication::setApplicationVersion("0.3.2-dev");
 
     // Handle command line arguments such as --help and an optional filename list
     QCommandLineParser parser;
