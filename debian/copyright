@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: fileinsight
-Source: https://github.com/GLolol/FileInsight/
+Source: https://github.com/jlu5/FileInsight/
 
 Files: *
 Copyright: 2016-2017 James Lu <james@overdrivenetworks.com>

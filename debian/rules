@@ -15,7 +15,7 @@ export QMAKE_LFLAGS_DEBUG := $(LDFLAGS)
 export QT_SELECT := qt5
 
 %:
-	dh $@ --parallel --builddirectory=builddir
+	dh $@ --builddirectory=builddir
 
 override_dh_auto_configure:
 	mkdir -p builddir

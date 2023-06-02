@@ -1,3 +1,12 @@
+fileinsight (0.3.1-0utopia2) unstable; urgency=medium
+
+  * Packaging refresh:
+    - Update email and repo address
+    - Update to debhelper 13 and Standards-Version 4.6.2
+    - d/rules: remove obsolete --parallel flag
+
+ -- James Lu <jlu@debian.org>  Thu, 01 Jun 2023 18:48:42 -0700
+
 fileinsight (0.3.1-0utopia1) unstable; urgency=medium
 
   * New release.

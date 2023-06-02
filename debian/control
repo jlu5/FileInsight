@@ -1,16 +1,16 @@
 Source: fileinsight
 Section: utils
 Priority: optional
-Maintainer: James Lu <bitflip3@gmail.com>
-Build-Depends: debhelper (>= 9),
+Maintainer: James Lu <jlu@debian.org>
+Build-Depends: debhelper-compat (= 13),
  qt5-qmake,
  libmagic-dev,
  qtbase5-dev,
  qtbase5-dev-tools
-Standards-Version: 4.1.1
-Homepage: https://github.com/GLolol/fileinsight
-Vcs-Git: https://github.com/GLolol/fileinsight
-Vcs-Browser: https://github.com/GLolol/fileinsight/tree/debian
+Standards-Version: 4.6.2
+Homepage: https://github.com/jlu5/fileinsight
+Vcs-Git: https://github.com/jlu5/fileinsight
+Vcs-Browser: https://github.com/jlu5/fileinsight/tree/debian
 
 Package: fileinsight
 Architecture: any
